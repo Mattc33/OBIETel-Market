@@ -1,0 +1,65 @@
+
+header {
+    min-height: 100px; min-width: calc(100% - 280px);
+    position: fixed; left: 0; top: 0;
+    background-color: #ffffff;
+    margin-left: 280px;
+
+    aside {
+        min-height: 100px; width: auto;
+        margin-left: 20px; margin-right: 20px;
+        border-bottom: 1px solid #EEEEEE;
+        display: flex;
+        align-items: center;
+
+        .user-panel {
+            min-height: 50px; width: 100%;
+            // background-color: lightgray;
+            vertical-align: middle;
+
+            .fa-user-circle {
+                min-height: 50px;
+            }
+
+            .account-name {
+                font-size: 18px;
+            }
+
+            .alerts {
+                padding-left: 20px;
+
+                .fa-exclamation-triangle {
+                    color: gray;
+                    font-size: 30px;
+                }
+
+                .alert-counter {
+                    color: black;
+                    border: 1.5px solid orange;
+                    padding-left: 5px;
+                    padding-right: 5px;
+                    border-radius: 40%;
+                }
+            }
+
+            .emails {
+                padding-left: 10px;
+                .fa-envelope-open {
+                    color: gray;
+                    font-size: 30px;
+                }
+
+                .alert-counter {
+                    color: black;
+                    border: 1.5px solid red;
+                    padding-left: 5px;
+                    padding-right: 5px;
+                    border-radius: 40%;
+                }
+
+            }
+        }
+        
+    }
+
+}

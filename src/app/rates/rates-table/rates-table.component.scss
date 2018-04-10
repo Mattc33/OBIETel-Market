@@ -1,0 +1,145 @@
+.top-table-toolbar {
+    height: 30px;
+    border: 1px solid lightgray;
+
+    .selected-country-name-header {
+        line-height: 35px;
+        float: left;
+        margin-left: 40%;
+        font-weight: bold;
+    }
+
+    button {
+        background-color: transparent;
+        border: none;
+        line-height: 35px;
+
+        .fa-bars {
+            font-size: 20px;
+        }
+
+        .filter-header {
+            padding-left: 5px;
+        }
+
+        .country-carrier-header {
+            padding-right: 5px;
+        }
+    }
+
+    button:focus {
+        outline:0;
+    }
+
+    button:hover {
+        color: gray;
+    }
+
+    .toggle-filter-menu {
+        float: left;
+    }
+
+    .toggle-country-carrier-menu {
+        float: right;
+    }
+}
+
+/deep/ .ng-sidebar {
+    margin-top: 31px;
+
+    .country-carrier-picker-container {
+        margin-right: -8px;
+        width: 20vw; height: auto;
+        border-left: 1px solid #E0E0E0;
+    
+        #country-picker-table {
+            width: 98%; height: 90vh;
+            border-top: 1px solid #E0E0E0;
+            border-right: 1px solid #E0E0E0;
+        }
+    }
+
+    .filter-container {
+        width: 20vw; height: 150vh;
+        border-left: 1px solid #E0E0E0;
+        border-right: 1px solid #E0E0E0;
+        background-color: rgba(255,255,255, 0.8);
+
+        header {
+            font-size: 20px;
+            font-weight: bold;
+            padding-top: 10px;
+            margin-bottom: 10px;
+            padding-left: 5px;
+        }
+
+        .filter-option-title{
+            font-size: 18px;
+        }
+
+        mat-radio-group {
+            margin-top: 10px;
+        }
+
+        mat-radio-button {
+            margin-top: 5px;
+            user-select: none;
+        }
+
+        .checkbox-container {
+            margin-top: 10px;
+        }
+
+        hr {
+            height: 1px;
+            color: #E0E0E0;
+            background-color: #E0E0E0;
+            border: none;
+        }
+
+        .filter-group {
+            width: 90%; height: auto;
+            display: block;
+            margin-left: auto; margin-right: auto;
+            // border: 1px solid black;
+
+            .filter-option-title {
+                font-weight: bold;
+            }
+
+            .filter-radio-group {
+                display: inline-flex;
+                flex-direction: column;
+                margin-bottom: 5px;
+            }
+
+            .inner {
+                margin-top: 0px;
+            }
+
+        }
+    }
+}
+
+.carrier-container {
+    width: 100%; height: 100%; 
+    float: left;
+
+    #carrier-table {
+        width: 100%; height: 90vh;
+        border-top: 1px solid #E0E0E0;
+        border-right: 1px solid #E0E0E0;
+    }
+}
+
+// .grid-toolpanel-container {
+//     width: 6vw; height: 100vh;
+//     margin-left: 10px;
+//     float: left;
+
+//     #toolpanel-table {
+//         width: 100%; height: 85vh;
+//         float: left;
+//         border-top: 1px solid #E0E0E0;
+//     }
+// }

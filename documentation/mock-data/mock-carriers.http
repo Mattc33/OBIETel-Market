@@ -1,0 +1,32 @@
+
+/carriers/ratecards/rates/{country_code}
+
+[
+    {
+        "carrier_id": 0,
+        "carrier_name": "string",
+        "carrier_tier": 0, //int 1-5
+        "ratecard_id": 0,
+        "ratecard_name": "string", 
+        "rating": 0, //int 1-5
+        "quality_of_service": 0, //int 1-5
+        "resellable": true, //boolean
+        "carrier_coverage": true, //boolean
+        "end_ts": 0, //
+        "quantity_available": 0, //
+        "popular_deals": true, //boolean
+        "rates": [
+            {
+                "prefix": "string",
+                "buy_rate": 0,
+                "sell_rate": 0
+            },
+        ],
+        "users": [
+            {
+                "white_listed": true, //boolean
+                "black_listed": false //boolean
+            }
+        ]
+    }
+]
