@@ -14,34 +14,34 @@ import { CarrierTableSharedService } from './../services/carrier-table.shared.se
 export class RatesTableComponent implements OnInit {
 
     // row data and columnd defs
+    private rowData;
+    private columnDefs;
     private rowDataCountry;
     private columnDefsCountry;
     private columnDefsCarrier;
-    private rowDataToolpanel;
-    private columnDefsToolpanel;
+    private columnDefsDetails;
 
     // gridApi
+    private gridApi: GridApi;
+    private columnApi: ColumnApi;
     private gridApiCountry: GridApi;
     private gridApiCarrier: GridApi;
-    private columnApiCarrier: ColumnApi;
-    private gridApiToolpanel: GridApi;
+    private gridApiDetails: GridApi;
 
     // gridUi
     private rowSelectionM = 'multiple';
-
-    // raw json data
-    private rawJSON;
 
     // top grid toolbar
     private selectedCountryName: string;
 
     // sidepanels
-    private booleanFilterSidebar: boolean = false;
-    private booleanCountryCarrierSidebar: boolean = true;
+    private booleanFilterSidebar = false;
+    private booleanCountryCarrierSidebar = true;
+    private booleanCarrierDetailsSidebar = false;
+    private countryCarrierPanelWidth;
 
     // filter
-    private currentPriceToggle: string;
-    private priceSortGroup = ['Minimum Price', 'Maximum Price'];
+    private priceSortGroup = ['Minimum Price', 'Maximum Price', 'Reset Price'];
 
     private currentQosToggle: string;
     private qosFilterGroup = ['Platinum', 'Gold', 'Silver', 'Bronze', 'Tier 5'];
@@ -66,89 +66,50 @@ export class RatesTableComponent implements OnInit {
 
     private currentPopularDealToggle;
 
-    //
-    private test;
-
     constructor(
         private codesSharedService: CodesSharedService,
         private ratesService: RatesService,
         private carrierTableSharedService: CarrierTableSharedService
     ) {
         this.columnDefsCountry = this.createColumnDefsCountry();
-        this.columnDefsToolpanel = this.createColumnDefsToolbar();
+        this.columnDefsCarrier = this.createColumnDefsCarrier();
+        this.columnDefsDetails = this.createColumnDefsDetails();
     }
 
     ngOnInit() {
         this.rowDataCountry = this.codesSharedService.getCountryCodes().slice(1);
     }
 
-    private toggleFilterSidebar() {
-        this.booleanFilterSidebar = !this.booleanFilterSidebar;
-    }
-
-    private toggleCountryCarrierSidebar() {
-        this.booleanCountryCarrierSidebar = !this.booleanCountryCarrierSidebar;
-    }
-
     /*
         ~~~~~~~~~~ Carrier-Selector API Serivices ~~~~~~~~~~
     */
+
+    get_mockData() {
+        this.ratesService.get_mockData()
+            .subscribe(
+                data => {
+
+                    const carrierGroupHeadersArr = this.carrierTableSharedService.createColumnGroupHeaders(data);
+                    console.log(carrierGroupHeadersArr);
+
+                    this.columnDefs = this.carrierTableSharedService.createCarrierColumnDefs(carrierGroupHeadersArr, data);
+                    console.log(this.columnDefsCarrier);
+
+                    const finalRowData = this.carrierTableSharedService.createRowData(data);
+                    this.gridApi.setRowData(finalRowData);
+
+                    this.gridApiCarrier.setRowData(carrierGroupHeadersArr);
+                    this.gridApiCarrier.selectAll();
+
+                    this.gridApiDetails.setRowData(carrierGroupHeadersArr);
+                }
+            );
+    }
+
     get_specificCarrierRatesByCountry(countryCode: number) {
         this.ratesService.get_ratesByCountry(countryCode)
             .subscribe(
                 data => {
-                    // prune data to keep only private rates
-                    const filteredData = this.carrierTableSharedService.filterForPrivateRateCardsOnly(data);
-                    console.log(filteredData);
-
-                    const carrierGroupHeadersArr = this.carrierTableSharedService.createColumnGroupHeaders(filteredData);
-                    console.log(carrierGroupHeadersArr);
-
-                    this.columnDefsCarrier = this.carrierTableSharedService.createCarrierColumnDefs(carrierGroupHeadersArr, filteredData);
-                    console.log(this.columnDefsCarrier);
-
-                    this.carrierTableSharedService.createRowData(filteredData);
-
-                    // function groupAllRatesByPrefix() { // Group rates by every unique prefix
-                    //     function groupBy(list, keyGetter) {
-                    //         const map = new Map();
-                    //         list.forEach((item) => {
-                    //             const key = keyGetter(item);
-                    //             if (!map.has(key)) {
-                    //                 map.set(key, [item]);
-                    //             } else {
-                    //                 map.get(key).push(item);
-                    //             }
-                    //         });
-                    //         return map;
-                    //     }
-
-                    //     let groupedByPrefixMapped;
-                    //     for ( let i = 0; i < numOfUniquePrefix(); i++) {
-                    //         groupedByPrefixMapped = groupBy(carrierRowData, rate => rate.prefix);
-                    //     }
-
-                    //     const groupByPrefixArr = Array.from(groupedByPrefixMapped);
-
-                    //     const groupedByPrefixRemoveKeyArr = [];
-                    //     for ( let i = 0; i < groupByPrefixArr.length; i++) {
-                    //         groupedByPrefixRemoveKeyArr.push(
-                    //             groupByPrefixArr[i][1]
-                    //         );
-                    //     }
-
-                    //     return groupedByPrefixRemoveKeyArr;
-                    // }
-                    // console.log(groupAllRatesByPrefix());
-
-                    // const finalRowData = []; // loops through an array of objects and merges multiple objects into one
-                    // for ( let i = 0; i < groupAllRatesByPrefix().length; i++) {
-                    //      finalRowData.push(
-                    //         Object.assign.apply({}, groupAllRatesByPrefix()[i])
-                    //      );
-                    // }
-                    // console.log(finalRowData);
-                    // this.gridApiCarrier.setRowData(finalRowData);
                 }
             );
     }
@@ -156,19 +117,24 @@ export class RatesTableComponent implements OnInit {
     /*
         ~~~~~~~~~~ AG Grid Initialization ~~~~~~~~~~
     */
+    on_GridReady(params): void {
+        this.gridApi = params.api;
+        this.columnApi = params.columnApi;
+    }
+
     on_GridReady_country(params): void {
         this.gridApiCountry = params.api;
+        params.api.sizeColumnsToFit();
     }
 
-    on_GridReady_carrier(params) {
+    on_GridReady_carrier(params): void {
         this.gridApiCarrier = params.api;
-        this.columnApiCarrier = params.columnApi;
-        // params.api.sizeColumnToFit();
+        params.api.sizeColumnsToFit();
     }
 
-    on_GridReady_toolpanel(params) {
-        this.gridApiToolpanel = params.api;
-        // params.api.sizeColumnsToFit();
+    on_GridReady_details(params): void {
+        this.gridApiDetails = params.api;
+        params.api.sizeColumnsToFit();
     }
 
     private createColumnDefsCountry() {
@@ -179,27 +145,64 @@ export class RatesTableComponent implements OnInit {
             },
             {
                 headerName: 'Code', field: 'code', hide: true,
-            },
-            {
-                headerName: 'Carriers', field: 'carriers',
-            },
-        ];
-    }
-
-    private createColumnDefsToolbar() {
-        return [
-            {
-                headerName: 'Carriers', field: 'carrier_name', checkboxSelection: true,
             }
         ];
     }
 
-    private createMockRowDataToolpanel() {
+    private createColumnDefsCarrier() {
         return [
             {
-
+                headerName: 'Carriers', field: 'groupHeaderName', checkboxSelection: true,
+                headerCheckboxSelection: true,
             }
         ];
+    }
+
+    private createColumnDefsDetails() {
+        return [
+            {
+                headerName: 'Carrier', field: 'groupHeaderName',
+            },
+            {
+                headerName: 'Ratings', field: 'rating',
+            },
+            {
+                headerName: 'Carrier Tier', field: 'carrier_tier',
+            },
+            {
+                headerName: 'Carrier Coverage', field: 'carrier_coverage',
+            },
+            {
+                headerName: 'Quality Of Service', field: 'quality_of_service',
+            },
+            {
+                headerName: 'Popular Deals', field: 'popular_deals',
+            },
+            {
+                headerName: 'Resellable', field: 'resellable',
+            },
+            {
+                headerName: 'Quantity', field: 'quantity_available',
+            },
+            {
+                headerName: 'Expires', field: 'end_ts',
+            }
+        ];
+    }
+
+    /*
+        ~~~~~~~~~~ Top Toolbar UI Interactions ~~~~~~~~~~
+    */
+    private toggleFilterSidebar() {
+        this.booleanFilterSidebar = !this.booleanFilterSidebar;
+    }
+
+    private toggleCountryCarrierSidebar() {
+        this.booleanCountryCarrierSidebar = !this.booleanCountryCarrierSidebar;
+    }
+
+    private toggleCarrierDetailsSidebar() {
+        this.booleanCarrierDetailsSidebar = !this.booleanCarrierDetailsSidebar;
     }
 
     /*
@@ -209,20 +212,103 @@ export class RatesTableComponent implements OnInit {
         params.api.sizeColumnsToFit();
     }
 
-    rowSelected(params) {
-        this.gridApiCarrier.setRowData([]);
-        this.columnDefsCarrier = [];
+    rowSelectedCountry(params) {
+        this.gridApi.setRowData([]);
+        // this.gridApiCarrier.setRowData([]);
 
         const countryCode = this.gridApiCountry.getSelectedRows();
         if ( countryCode.length > 0 ) {
-            this.get_specificCarrierRatesByCountry(countryCode[0].code);
+            this.get_mockData();
             this.selectedCountryName = this.gridApiCountry.getSelectedRows()[0].country;
         } else {
         }
     }
 
+    rowSelectedCarrier(params) {
+        console.log('-->');
+
+        const mainGridColArr = this.columnApi.getColumnState();
+
+        if ( params.node.selected === true ) {
+            console.log(params.rowIndex);
+            console.log(mainGridColArr);
+
+            let colId = 'carrier';
+            if ( params.rowIndex > 0 ) {
+                colId = `carrier_${params.rowIndex}`;
+            }
+            console.log(colId);
+            this.showCol(colId);
+        } else {
+            let colId = 'carrier';
+            if ( params.rowIndex > 0) {
+                colId = `carrier_${params.rowIndex}`;
+            }
+            console.log(colId);
+            this.hideCol(colId);
+        }
+    }
+
     /*
-        ~~~~~~~~~~ parse Data ~~~~~~~~~~
+        ~~~~~~~~~~~~ AG Grid Sort | Filters ~~~~~~~~~~
     */
+    sortByMinimumPrice() {
+        const sort = [
+            {
+                colId: 'minimum_price',
+                sort: 'asc'
+            }
+        ];
+        this.gridApi.setSortModel(sort);
+    }
+
+    sortByMaximumPrice() {
+        const sort = [
+            {
+                colId: 'maximum_price',
+                sort: 'desc'
+            }
+        ];
+        this.gridApi.setSortModel(sort);
+    }
+
+    sortByResetPrice() {
+        const sort = [
+            {
+                colId: 'minimum_price',
+                sort: 'null'
+            },
+            {
+                colId: 'maximum_price',
+                sort: 'null'
+            }
+        ];
+        this.gridApi.setSortModel(sort);
+    }
+
+    sortByPrice(params) {
+        if (params.value === 'Minimum Price') {
+            this.sortByMinimumPrice();
+        }
+        if (params.value === 'Maximum Price') {
+            this.sortByMaximumPrice();
+        }
+        if (params.value === 'Reset Price') {
+            this.sortByResetPrice();
+        }
+    }
+
+    hideCol(colId: string) {
+        this.columnApi.setColumnVisible(colId, false, null);
+    }
+
+    showCol(colId: string) {
+        this.columnApi.setColumnVisible(colId, true, null);
+    }
+
+    sortCol() {
+        const colStateArr = this.columnApi.getColumnState();
+        console.log(colStateArr);
+    }
 
 }

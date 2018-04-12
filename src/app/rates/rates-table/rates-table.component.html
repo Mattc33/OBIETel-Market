@@ -4,13 +4,14 @@
     <!-- Filter sidebar -->
     <ng-sidebar [(opened)]="booleanFilterSidebar" position="left" >
         <div class="filter-container">
+
             <header>Filter By:</header>
 
             <hr>
 
             <div class="filter-group"> <!-- Price -->
                 <div class="filter-option-title">Price</div>
-                <mat-radio-group class="filter-radio-group" [(ngModel)]="currentPriceToggle">
+                <mat-radio-group class="filter-radio-group" (change)="sortByPrice($event)">
                     <mat-radio-button class="price-radio-button" *ngFor="let price of priceSortGroup" [value]="price">
                         {{price}}
                     </mat-radio-button>
@@ -150,25 +151,47 @@
 
     <!-- Carrier | Country sidebar -->
     <ng-sidebar [(opened)]="booleanCountryCarrierSidebar" position="right" >
-        <div class="country-carrier-picker-container">
+        <div class="country-carrier-picker-container" [style.width]="countryCarrierPanelWidth">
             <ag-grid-angular class="ag-theme-material" id="country-picker-table"
                 [columnDefs]="columnDefsCountry" [rowData]="rowDataCountry"
-                [rowSelection]="rowSelection" (rowSelected)="rowSelected($event)" [suppressRowClickSelection]="true"
+                [rowSelection]="rowSelection" (rowSelected)="rowSelectedCountry($event)" [suppressRowClickSelection]="true"
                 [floatingFilter]="true" [enableSorting]="true"
-                (gridSizeChanged)="gridSizeChanged($event)"
         
                 (gridReady)="on_GridReady_country($event)"
             >
             </ag-grid-angular>
+            <ag-grid-angular class="ag-theme-material" id="carrier-picker-table"
+                [columnDefs]="columnDefsCarrier" [rowData]="rowDataCarrier"
+                [rowSelection]="rowSelectionM" (rowSelected)="rowSelectedCarrier($event)" [suppressRowClickSelection]="true"
+                [floatingFilter]="true"
+        
+                (gridReady)="on_GridReady_carrier($event)"
+            >
+            </ag-grid-angular>
         </div>
+    </ng-sidebar>
+
+    <!-- Carrier Details sidebar -->
+    <ng-sidebar [(opened)]="booleanCarrierDetailsSidebar" position="left">
+    <div class="carrier-details-container">
+        <ag-grid-angular class="ag-theme-material" id="details-table"
+            [columnDefs]="columnDefsDetails" [rowData]="" [animateRows]="true"
+            [suppressRowClickSelection]="true"
+            [floatingFilter]="true" [enableSorting]="true"
+            [enableColResize]="true" (gridSizeChanged)="gridSizeChanged($event)"
+
+            (gridReady)="on_GridReady_details($event)"
+        >
+        </ag-grid-angular>
+    </div>
     </ng-sidebar>
     
     <!-- Page content -->
     <div ng-sidebar-content>
-
         <div class="top-table-toolbar">
             <div class="toggle-filter-menu">
-                <button (click)="toggleFilterSidebar()"> <i class="fas fa-bars"></i> <span class="filter-header">Filter Option</span> </button>
+                <button (click)="toggleFilterSidebar()"> <i class="fas fa-bars"></i> <span class="filter-header">Filter Options</span> </button>
+                <button (click)="toggleCarrierDetailsSidebar()"><i class="fas fa-bars"></i> <span class="country-carrier-header">Carrier Details</span> </button>
             </div>
             <div class="selected-country-name-header"> {{selectedCountryName}} </div>
             <div class="toggle-country-carrier-menu" >
@@ -176,14 +199,14 @@
             </div>
         </div>
 
-        <div class="carrier-container">
-            <ag-grid-angular class="ag-theme-material" id="carrier-table"
-                [columnDefs]="columnDefsCarrier" [rowData]="" [animateRows]="true"
+        <div class="main-container">
+            <ag-grid-angular class="ag-theme-material" id="main-table"
+                [columnDefs]="columnDefs" [rowData]="" [animateRows]="true"
                 [suppressRowClickSelection]="true"
                 [floatingFilter]="true" [enableSorting]="true"
                 [enableColResize]="true"
 
-                (gridReady)="on_GridReady_carrier($event)"
+                (gridReady)="on_GridReady($event)"
             >
         </ag-grid-angular>
 </div>
@@ -191,27 +214,3 @@
     </div>
     
 </ng-sidebar-container>
-
-
-<!-- <div class="carrier-container">
-    <ag-grid-angular class="ag-theme-material" id="carrier-table"
-        [columnDefs]="columnDefsCarrier" [rowData]="" [animateRows]="true"
-        [suppressRowClickSelection]="true"
-        [floatingFilter]="true" [enableSorting]="true"
-        [enableColResize]="true" (gridSizeChanged)="gridSizeChanged($event)"
-
-        (gridReady)="on_GridReady_carrier($event)"
-    >
-    </ag-grid-angular>
-</div>
-<div class="country-carrier-picker-container">
-    <ag-grid-angular class="ag-theme-material" id="country-picker-table"
-        [columnDefs]="columnDefsCountry" [rowData]="rowDataCountry"
-        [rowSelection]="rowSelection" (rowSelected)="rowSelected($event)" [suppressRowClickSelection]="true"
-        [floatingFilter]="true" [enableSorting]="true"
-        [enableColResize]="true" (gridSizeChanged)="gridSizeChanged($event)"
-
-        (gridReady)="on_GridReady_country($event)"
-    >
-    </ag-grid-angular>
-</div> -->

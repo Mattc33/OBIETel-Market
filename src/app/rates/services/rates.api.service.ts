@@ -26,6 +26,13 @@ export class RatesService {
             .do(data => console.log('server data:', data));
     }
 
+    get_mockData() {
+        return this.http.get('https://rawgit.com/Mattc33/MattsCDN/master/json/mock-data.json')
+            .map(res => res.json())
+            .catch(this.handleError)
+            .do(data => console.log('server data:', data));
+    }
+
     handleError(error: any): any {
         const errMsg = (error.message) ? error.message :
             error.status ? `${error.status} - ${error.statusText}` : 'Server error';

@@ -1,5 +1,11 @@
 import { Injectable } from '@angular/core';
 
+declare global { // declare global interface, set custom fn groupBy with type any
+    interface Array<T> {
+      groupBy(elem: T): Array<T>;
+    }
+}
+
 @Injectable()
 export class CarrierTableSharedService {
 
@@ -7,8 +13,28 @@ export class CarrierTableSharedService {
         return input.filter(data => data.ratecard_name.includes('private'));
     }
 
-    createColumnGroupHeaders(input) {
-        return input.map(privateData => `Carrier ${privateData.carrier_id}`);
+    createColumnGroupHeaders(input) { // groupHeader: `Carrier ${privateData.carrier_id}`,
+        const colGroupArr = [];
+        for ( let i = 0; i < input.length; i++ ) {
+            colGroupArr.push(
+                {
+                    groupHeaderName: `Carrier ${input[i].carrier_id}`,
+                    carrier_coverage: input[i].carrier_coverage,
+                    carrier_id: input[i].carrier_id,
+                    carrier_name: input[i].carrier_name,
+                    carrier_tier: input[i].carrier_tier,
+                    end_ts: input[i].end_ts,
+                    popular_deals: input[i].popular_deals,
+                    quality_of_service: input[i].quality_of_service,
+                    quantity_available: input[i].quantity_available,
+                    ratecard_id: input[i].ratecard_id,
+                    ratecard_name: input[i].ratecard_name,
+                    rating: input[i].rating,
+                    resellable: input[i].resellable
+                }
+            );
+        }
+        return colGroupArr;
     }
 
     createCarrierColumnDefs(carrierGroupHeadersArr, filteredData) {
@@ -17,16 +43,39 @@ export class CarrierTableSharedService {
             {
                 headerName: 'Prefix', field: 'prefix',
                 cellStyle: { 'border-right': '1px solid #E0E0E0' },
-            }
+            },
+            {
+                headerName: 'Minimum Price', field: 'minimum_price',
+                valueGetter(params) {
+                    const arr = Object.values(params.data);
+                    arr.shift();
+                    const min = Math.min(...arr);
+                    return min;
+                },
+                cellStyle: { 'border-right': '1px solid #E0E0E0' },
+                hide: true,
+            },
+            {
+                headerName: 'Maximum Price', field: 'maximum_price',
+                valueGetter(params) {
+                    const arr = Object.values(params.data);
+                    arr.shift();
+                    const min = Math.max(...arr);
+                    return min;
+                },
+                cellStyle: { 'border-right': '1px solid #E0E0E0' },
+                hide: true,
+            },
         );
         for ( let i = 0; i < carrierGroupHeadersArr.length; i++ ) {
             const sellrateFieldString = 'sellrate_' + filteredData[i].ratecard_id;
             carrierColumnDefs.push(
                 {
-                    headerName: carrierGroupHeadersArr[i],
+                    headerName: carrierGroupHeadersArr[i].groupHeaderName,
                     children: [
                         {
                             headerName: 'Sell Rate', field: sellrateFieldString,
+                            colId: 'carrier',
                             cellStyle: { 'border-right': '1px solid #E0E0E0' }
                         },
                     ]
@@ -38,7 +87,8 @@ export class CarrierTableSharedService {
 
     createRowData(inputFilteredData) {
         const carrierRowData = carrierRowDataFn(inputFilteredData);
-        const numOfUniquePrefix = numOfUniquePrefixFn(carrierRowData);
+        const groupDataByPrefix = groupDataByPrefixFn(carrierRowData);
+        const finalRowData = combineObjsFn(groupDataByPrefix);
 
         // Set row data
         function carrierRowDataFn(filteredData) {
@@ -64,24 +114,39 @@ export class CarrierTableSharedService {
 
         console.log(carrierRowData);
 
-        // process rowData for AG Grid
-        function numOfUniquePrefixFn(input_carrierRowData) { // Detect how many unique prefixes
-            const prefixArr = [];
+        function groupDataByPrefixFn(json) {
+            Array.prototype.groupBy = function (prop) {
+                return this.reduce(function (groups, item) {
+                    groups[item[prop]] = groups[item[prop]] || [];
+                    groups[item[prop]].push(item);
+                    return groups;
+                }, {});
+            };
 
-            for ( let i = 0; i < input_carrierRowData.length; i++) {
-                prefixArr.push(input_carrierRowData[i].prefix);
+            const data = json.groupBy('prefix');
+            const dataArr = [];
+            for (const item in data) {
+                if ( item ) {
+                    dataArr.push(data[item]);
+                } else {
+                }
             }
-
-            const uniquePrefixArr = prefixArr.filter(function(item, position) {
-                return prefixArr.indexOf(item) === position;
-            });
-
-            return uniquePrefixArr;
+            return dataArr;
         }
+        console.log(groupDataByPrefix);
 
-        console.log(numOfUniquePrefix);
+        function combineObjsFn(groupedData) {
+            const rowData = []; // loops through an array of objects and merges multiple objects into one
+            for ( let i = 0; i < groupedData.length; i++) {
+                rowData.push(
+                    Object.assign.apply({}, groupedData[i])
+                 );
+            }
+            return rowData;
+        }
+        console.log(finalRowData);
 
-
+        return finalRowData;
     }
 
 
