@@ -1,36 +1,36 @@
 
 header {
-    min-height: 100px; min-width: calc(100% - 280px);
+    min-height: 40px; min-width: calc(100% - 280px);
     position: fixed; left: 0; top: 0;
     background-color: #ffffff;
     margin-left: 280px;
 
     aside {
-        min-height: 100px; width: auto;
+        min-height: 40px; width: auto;
         margin-left: 20px; margin-right: 20px;
-        border-bottom: 1px solid #EEEEEE;
+        border-bottom: 1px solid gray;
         display: flex;
         align-items: center;
 
         .user-panel {
-            min-height: 50px; width: 100%;
+            min-height: 30px; width: 100%;
             // background-color: lightgray;
             vertical-align: middle;
 
             .fa-user-circle {
-                min-height: 50px;
+                min-height: 25px;
             }
 
             .account-name {
-                font-size: 18px;
+                font-size: 15px;
             }
 
             .alerts {
-                padding-left: 20px;
+                padding-left: 10px;
 
                 .fa-exclamation-triangle {
                     color: gray;
-                    font-size: 30px;
+                    font-size: 18px;
                 }
 
                 .alert-counter {
@@ -39,14 +39,15 @@ header {
                     padding-left: 5px;
                     padding-right: 5px;
                     border-radius: 40%;
+                    font-size: 13px;
                 }
             }
 
             .emails {
-                padding-left: 10px;
+                padding-left: 5px;
                 .fa-envelope-open {
                     color: gray;
-                    font-size: 30px;
+                    font-size: 18px;
                 }
 
                 .alert-counter {
@@ -55,6 +56,7 @@ header {
                     padding-left: 5px;
                     padding-right: 5px;
                     border-radius: 40%;
+                    font-size: 13px;
                 }
 
             }

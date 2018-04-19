@@ -1,10 +1,12 @@
-
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ElementRef, Inject, Renderer } from '@angular/core';
 import { GridApi, ColumnApi, ColumnGroup } from 'ag-grid';
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 import { RatesService } from './../services/rates.api.service';
 import { CodesSharedService } from './../services/codes.shared.service';
-import { CarrierTableSharedService } from './../services/carrier-table.shared.service';
+import { MainTableSharedService } from './../services/main-table.shared.service';
+import { RatesSharedService } from './../services/rates.shared.service';
+import { RatingsComponent } from './dialog/ratings/ratings.component';
 
 @Component({
   selector: 'app-rates-table',
@@ -13,23 +15,22 @@ import { CarrierTableSharedService } from './../services/carrier-table.shared.se
 })
 export class RatesTableComponent implements OnInit {
 
+    public elementRef: ElementRef;
+
     // row data and columnd defs
-    private rowData;
-    private columnDefs;
-    private rowDataCountry;
-    private columnDefsCountry;
-    private columnDefsCarrier;
+    private rowData; private columnDefs; private rowDataCountry; private columnDefsCountry; private columnDefsCarrier;
     private columnDefsDetails;
 
     // gridApi
-    private gridApi: GridApi;
-    private columnApi: ColumnApi;
-    private gridApiCountry: GridApi;
-    private gridApiCarrier: GridApi;
+    private gridApi: GridApi; private columnApi: ColumnApi; private gridApiCountry: GridApi; private gridApiCarrier: GridApi;
     private gridApiDetails: GridApi;
 
     // gridUi
     private rowSelectionM = 'multiple';
+    private howManyCarriers: number;
+    private currentlySelectedCarriers = [];
+    private movableRowToCol;
+    private enterIndex;
 
     // top grid toolbar
     private selectedCountryName: string;
@@ -67,13 +68,14 @@ export class RatesTableComponent implements OnInit {
     private currentPopularDealToggle;
 
     constructor(
-        private codesSharedService: CodesSharedService,
-        private ratesService: RatesService,
-        private carrierTableSharedService: CarrierTableSharedService
+        private codesSharedService: CodesSharedService, private ratesService: RatesService,
+        private mainTableSharedService: MainTableSharedService, private ratesSharedService: RatesSharedService,
+        @Inject(ElementRef) elementRef: ElementRef, private renderer: Renderer, public dialog: MatDialog
     ) {
         this.columnDefsCountry = this.createColumnDefsCountry();
         this.columnDefsCarrier = this.createColumnDefsCarrier();
         this.columnDefsDetails = this.createColumnDefsDetails();
+        this.elementRef = elementRef;
     }
 
     ngOnInit() {
@@ -83,19 +85,16 @@ export class RatesTableComponent implements OnInit {
     /*
         ~~~~~~~~~~ Carrier-Selector API Serivices ~~~~~~~~~~
     */
-
-    get_mockData() {
-        this.ratesService.get_mockData()
+    get_specificCarrierRatesByCountry(isoCode: string) {
+        this.ratesService.get_ratesByCountry(isoCode)
             .subscribe(
                 data => {
+                    const carrierGroupHeadersArr = this.mainTableSharedService.createColumnGroupHeaders(data);
+                    this.howManyCarriers = carrierGroupHeadersArr.length;
 
-                    const carrierGroupHeadersArr = this.carrierTableSharedService.createColumnGroupHeaders(data);
-                    console.log(carrierGroupHeadersArr);
+                    this.columnDefs = this.mainTableSharedService.createCarrierColumnDefs(carrierGroupHeadersArr, data);
 
-                    this.columnDefs = this.carrierTableSharedService.createCarrierColumnDefs(carrierGroupHeadersArr, data);
-                    console.log(this.columnDefsCarrier);
-
-                    const finalRowData = this.carrierTableSharedService.createRowData(data);
+                    const finalRowData = this.mainTableSharedService.createRowData(data);
                     this.gridApi.setRowData(finalRowData);
 
                     this.gridApiCarrier.setRowData(carrierGroupHeadersArr);
@@ -106,20 +105,13 @@ export class RatesTableComponent implements OnInit {
             );
     }
 
-    get_specificCarrierRatesByCountry(countryCode: number) {
-        this.ratesService.get_ratesByCountry(countryCode)
-            .subscribe(
-                data => {
-                }
-            );
-    }
-
     /*
         ~~~~~~~~~~ AG Grid Initialization ~~~~~~~~~~
     */
     on_GridReady(params): void {
         this.gridApi = params.api;
         this.columnApi = params.columnApi;
+        this.gridApi.setGroupHeaderHeight(150);
     }
 
     on_GridReady_country(params): void {
@@ -152,8 +144,11 @@ export class RatesTableComponent implements OnInit {
     private createColumnDefsCarrier() {
         return [
             {
-                headerName: 'Carriers', field: 'groupHeaderName', checkboxSelection: true,
+                headerName: 'Carriers', field: 'groupHeaderName', colId: 'carrierToggle',
+                checkboxSelection: true,
                 headerCheckboxSelection: true,
+                // editable: true,
+                // rowDrag: true
             }
         ];
     }
@@ -193,16 +188,22 @@ export class RatesTableComponent implements OnInit {
     /*
         ~~~~~~~~~~ Top Toolbar UI Interactions ~~~~~~~~~~
     */
-    private toggleFilterSidebar() {
+    toggleFilterSidebar() {
         this.booleanFilterSidebar = !this.booleanFilterSidebar;
     }
 
-    private toggleCountryCarrierSidebar() {
+    toggleCountryCarrierSidebar() {
         this.booleanCountryCarrierSidebar = !this.booleanCountryCarrierSidebar;
     }
 
-    private toggleCarrierDetailsSidebar() {
+    toggleCarrierDetailsSidebar() {
         this.booleanCarrierDetailsSidebar = !this.booleanCarrierDetailsSidebar;
+    }
+
+    closeAllSideBars() {
+        this.booleanFilterSidebar = false;
+        this.booleanCountryCarrierSidebar = false;
+        this.booleanCarrierDetailsSidebar = false;
     }
 
     /*
@@ -214,37 +215,35 @@ export class RatesTableComponent implements OnInit {
 
     rowSelectedCountry(params) {
         this.gridApi.setRowData([]);
-        // this.gridApiCarrier.setRowData([]);
+        this.gridApiCarrier.setRowData([]);
+        this.columnDefs = [];
 
         const countryCode = this.gridApiCountry.getSelectedRows();
         if ( countryCode.length > 0 ) {
-            this.get_mockData();
+            const selectedCode = this.gridApiCountry.getSelectedRows()[0].code;
+            this.get_specificCarrierRatesByCountry(selectedCode); // API Call
             this.selectedCountryName = this.gridApiCountry.getSelectedRows()[0].country;
         } else {
         }
     }
 
     rowSelectedCarrier(params) {
-        console.log('-->');
-
         const mainGridColArr = this.columnApi.getColumnState();
+        this.detectColVisibility(params.node.selected, params.rowIndex);
+    }
 
-        if ( params.node.selected === true ) {
-            console.log(params.rowIndex);
-            console.log(mainGridColArr);
-
+    detectColVisibility(condition: boolean, rowIndex: number) {
+        if ( condition === true ) {
             let colId = 'carrier';
-            if ( params.rowIndex > 0 ) {
-                colId = `carrier_${params.rowIndex}`;
+            if ( rowIndex > 0 ) {
+                colId = `carrier_${rowIndex}`;
             }
-            console.log(colId);
             this.showCol(colId);
         } else {
             let colId = 'carrier';
-            if ( params.rowIndex > 0) {
-                colId = `carrier_${params.rowIndex}`;
+            if ( rowIndex > 0) {
+                colId = `carrier_${rowIndex}`;
             }
-            console.log(colId);
             this.hideCol(colId);
         }
     }
@@ -309,6 +308,247 @@ export class RatesTableComponent implements OnInit {
     sortCol() {
         const colStateArr = this.columnApi.getColumnState();
         console.log(colStateArr);
+    }
+
+    /*
+        ~~~~~~~~~~~~ AG Grid | For Col UI ~~~~~~~~~~
+    */
+    onNewColumnsLoaded(params) {
+        this.assignEventHandler();
+        this.assignRatingsEventHandler();
+    }
+
+    onColumnVisible(params) {
+        this.assignEventHandler();
+        this.reassignRatingsEventHandler(params.column.colId);
+        this.onCheckStatusAfterHideCol();
+    }
+    // What if instead of binding event reassignment to column visible I do it to the click of the other grid instead?
+
+    assignEventHandler() {
+        for ( let i = 0; i < this.howManyCarriers; i++ ) {
+            const hideCol = this.elementRef.nativeElement.querySelector(`#hide_${i}`); // hide column btn
+            const e_hideCol = this.renderer.listen(hideCol, 'click', (event) => {
+                 this.deselectCarrierTableCheckbox(event, `${i}`);
+            });
+
+            const checkbox = this.elementRef.nativeElement.querySelector(`#checkbox_${i}`);
+            const e_checkbox = this.renderer.listen(checkbox, 'change', (event) => {
+                this.onCheckboxSelection(event, `${i}`);
+            });
+        }
+    }
+
+    assignRatingsEventHandler() {
+        for ( let i = 0; i < this.howManyCarriers; i++ ) {
+            const ratings = this.elementRef.nativeElement.querySelector(`#ratings_${i}`);
+            const e_ratings = this.renderer.listen(ratings, 'click', (event) => {
+                this.onRatingsClicked(event, `${i}`);
+            });
+        }
+    }
+
+    reassignRatingsEventHandler(colId) {
+        let splitColId = parseInt(colId.split('_')[1], 0);
+        if ( splitColId > 0 ) {
+            splitColId = splitColId;
+        } else {
+            splitColId = 0;
+        }
+
+        const ratings = this.elementRef.nativeElement.querySelector(`#ratings_${splitColId}`);
+        const e_ratings = this.renderer.listen(ratings, 'click', (event) => {
+            this.onRatingsClicked(event, `${splitColId}`);
+        });
+    }
+
+    /*
+        ~~~~~~~~~~ General Purpose Fn's Returning Data ~~~~~~~~~~
+    */
+    getCarrierDatabaseId(rowNodeId): number {
+        return this.gridApiCarrier.getRowNode(rowNodeId).data.carrier_id;
+    }
+
+    getCarrierDatabaseName(rowNodeId): string {
+        return this.gridApiCarrier.getRowNode(rowNodeId).data.carrier_name;
+    }
+
+    getCarrierDatabaseRatings(rowNodeId): number {
+        return this.gridApiCarrier.getRowNode(rowNodeId).data.rating;
+    }
+
+    /*
+        ~~~~~~~~~~~~ AG Grid | For Col UI |  Hide Columns ~~~~~~~~~~
+    */
+    deselectCarrierTableCheckbox(event, id) {
+        const rowNode = this.gridApiCarrier.getRowNode(id);
+        rowNode.setSelected(false);
+    }
+
+    /*
+        ~~~~~~~~~~~~ AG Grid | For Col UI | Add to Selected ~~~~~~~~~~
+    */
+    onCheckboxSelection(event, id): void { // main event, since dynamic generated carrier col[0] has a different id conditional checks
+        const checkedStatus: boolean = event.target.checked;
+
+        if ( checkedStatus === true && id < 1 ) { // if checkbox true and carrier col[0] detected
+            this.addColCssClass(`div[col-id="carrier"]`, `highlight-column`);
+            this.addColCssClass(`div[col-id="0_0"]`, 'highlight-column');
+            this.addSelectedCarrier(id, this.getCarrierDatabaseId(id), this.getCarrierDatabaseName(id));
+        }
+        if ( checkedStatus === true && id > 0 ) { // if checkbox true and carrier col[>0] detected
+            this.addColCssClass(`div[col-id="carrier_${id}"]`, `highlight-column`);
+            this.addColCssClass(`div[col-id="${id}_0"]`, 'highlight-column');
+            this.addSelectedCarrier(id, this.getCarrierDatabaseId(id), this.getCarrierDatabaseName(id));
+        }
+        if ( checkedStatus === false && id < 1 ) { // if checkbox false and carrier col[0] detected
+            this.removeColCssClass(`div[col-id="carrier"]`, `highlight-column`);
+            this.removeColCssClass(`div[col-id="0_0"]`, 'highlight-column');
+            this.removeDeselectedCarrier(id);
+        }
+        if ( checkedStatus === false && id > 0 ) { // if checkbox false and carrier col[>0] detected
+            this.removeColCssClass(`div[col-id="carrier_${id}"]`, `highlight-column`);
+            this.removeColCssClass(`div[col-id="${id}_0"]`, 'highlight-column');
+            this.removeDeselectedCarrier(id);
+        }
+
+        this.onCheckStatusForCarrierTable();
+    }
+
+    addColCssClass(element: string, cssClass: string) {
+        this.elementRef.nativeElement.querySelector(`${element}`).classList.add(`${cssClass}`);
+    }
+
+    removeColCssClass(element: string, cssClass: string) {
+        this.elementRef.nativeElement.querySelector(`${element}`).classList.remove(`${cssClass}`);
+    }
+
+    addSelectedCarrier(colId: number, carrierId: number, carrierName: string) {
+        this.currentlySelectedCarriers.push(
+            {
+                colId: colId,
+                carrierId: carrierId,
+                carrierName: carrierName
+            }
+        );
+    }
+
+    removeDeselectedCarrier(colId: number) {
+        const filteredArr = this.currentlySelectedCarriers.filter( obj => obj.colId !== `${colId}` );
+        this.currentlySelectedCarriers = filteredArr;
+    }
+
+    onCheckStatusAfterHideCol() { // extra fn to ensure visual aspect is maintained on col hide
+        for ( let i = 0; i < this.currentlySelectedCarriers.length; i++) {
+            const id = this.currentlySelectedCarriers[i].colId;
+            if ( id < 1 ) {
+                this.addColCssClass(`div[col-id="carrier"]`, `highlight-column`);
+                this.addColCssClass(`div[col-id="0_0"]`, 'highlight-column');
+                this.elementRef.nativeElement.querySelector(`#checkbox_${id}`).checked = true;
+            }
+            if ( id > 0 ) {
+                this.addColCssClass(`div[col-id="carrier_${id}"]`, `highlight-column`);
+                this.addColCssClass(`div[col-id="${id}_0"]`, 'highlight-column');
+                this.elementRef.nativeElement.querySelector(`#checkbox_${id}`).checked = true;
+            }
+        }
+    }
+
+    onCheckStatusForCarrierTable() {
+        for ( let i = 0; i < this.currentlySelectedCarriers.length; i++) {
+            const colId = this.currentlySelectedCarriers[i].colId;
+            const node = this.gridApiCarrier.getRowNode(colId);
+        }
+    }
+
+    // onEditingCell(key, input, status) { // On checkbox selection edit cell of carrier table
+    //     if ( status === true ) {
+    //         const formattedInput = `${input} - [Selected]`;
+    //         this.gridApiCarrier.setFocusedCell(key, 'carrierToggle');
+    //         this.gridApiCarrier.startEditingCell(
+    //             {
+    //                 rowIndex: key,
+    //                 colKey: 'carrierToggle',
+    //                 keyPress: key,
+    //                 charPress: formattedInput
+    //             }
+    //         );
+    //     }
+    //     if ( status === false) {
+    //         const formattedInput = `${input}`;
+    //         this.gridApiCarrier.setFocusedCell(key, 'carrierToggle');
+    //         this.gridApiCarrier.startEditingCell(
+    //             {
+    //                 rowIndex: key,
+    //                 colKey: 'carrierToggle',
+    //                 keyPress: key,
+    //                 charPress: formattedInput
+    //             }
+    //         );
+    //     }
+    //     this.gridApiCarrier.stopEditing();
+    // }
+
+    // onRowDragEnter(params) {
+    //     console.log('enter -->');
+    //     console.log(params);
+
+    //     this.enterIndex = params.overIndex;
+    // }
+
+    // onRowDragEnd(params) {
+    //     console.log('end -->');
+    //     console.log(params);
+
+    //     const endIndex = params.overIndex;
+    //     this.columnApi.moveColumnByIndex(this.enterIndex + 3, endIndex + 3, null);
+    // }
+
+    // onColDragStarted(params) {
+    //     console.log(params);
+    // }
+
+    // onColDragStopped(params) {
+    //     console.log(params);
+    // }
+
+    // onColumnMoved(params) {
+    //     console.log(params.column.colId);
+    //     console.log(params.toIndex);
+
+    //     // this.gridApiCarrier.
+    // }
+
+    /*
+        ~~~~~~~~~~ AG Grid | For Column UI | Ratings ~~~~~~~~~~
+    */
+    onRatingsClicked(event, id) {
+        this.closeAllSideBars();
+
+        const carrierObj = {
+            carrier_name: this.getCarrierDatabaseName(id),
+            ratings: this.getCarrierDatabaseRatings(id)
+        };
+        this.openDialogRatings(carrierObj);
+    }
+
+    /*
+        ~~~~~~~~~~~~  Dialog ~~~~~~~~~~
+    */
+    openDialogRatings(carrierObj): void {
+        console.log('test');
+        const dialogRef = this.dialog.open(RatingsComponent, {
+            width: '30vw',
+            data:
+            {
+                name: carrierObj.carrier_name,
+                rating: carrierObj.ratings
+            }
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+            console.log('The dialog was closed');
+        });
     }
 
 }

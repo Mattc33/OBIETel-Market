@@ -19,8 +19,8 @@ export class RatesService {
         this.options = new RequestOptions({ headers: this.headers });
     }
 
-    get_ratesByCountry(countryCode: number) {
-        return this.http.get(this.url + 'carriers/ratecards/rates/' + countryCode)
+    get_ratesByCountry(isoCode: string) {
+        return this.http.get(this.url + 'carriers/ratecards/rates/' + isoCode)
             .map(res => res.json())
             .catch(this.handleError)
             .do(data => console.log('server data:', data));

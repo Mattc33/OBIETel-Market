@@ -5,6 +5,8 @@
     <ng-sidebar [(opened)]="booleanFilterSidebar" position="left" >
         <div class="filter-container">
 
+            <!-- <button (click)="onClickTest()">get elementref</button> -->
+
             <header>Filter By:</header>
 
             <hr>
@@ -152,7 +154,7 @@
     <!-- Carrier | Country sidebar -->
     <ng-sidebar [(opened)]="booleanCountryCarrierSidebar" position="right" >
         <div class="country-carrier-picker-container" [style.width]="countryCarrierPanelWidth">
-            <ag-grid-angular class="ag-theme-material" id="country-picker-table"
+            <ag-grid-angular class="ag-theme-balham" id="country-picker-table"
                 [columnDefs]="columnDefsCountry" [rowData]="rowDataCountry"
                 [rowSelection]="rowSelection" (rowSelected)="rowSelectedCountry($event)" [suppressRowClickSelection]="true"
                 [floatingFilter]="true" [enableSorting]="true"
@@ -160,25 +162,29 @@
                 (gridReady)="on_GridReady_country($event)"
             >
             </ag-grid-angular>
-            <ag-grid-angular class="ag-theme-material" id="carrier-picker-table"
+            <ag-grid-angular class="ag-theme-balham" id="carrier-picker-table"
                 [columnDefs]="columnDefsCarrier" [rowData]="rowDataCarrier"
                 [rowSelection]="rowSelectionM" (rowSelected)="rowSelectedCarrier($event)" [suppressRowClickSelection]="true"
                 [floatingFilter]="true"
-        
+                
                 (gridReady)="on_GridReady_carrier($event)"
             >
             </ag-grid-angular>
         </div>
     </ng-sidebar>
+    <!-- (rowDragEnd)="onRowDragEnd($event)" (rowDragEnter)="onRowDragEnter($event)" -->
 
     <!-- Carrier Details sidebar -->
     <ng-sidebar [(opened)]="booleanCarrierDetailsSidebar" position="left">
     <div class="carrier-details-container">
-        <ag-grid-angular class="ag-theme-material" id="details-table"
+        <ag-grid-angular class="ag-theme-balham" id="details-table"
             [columnDefs]="columnDefsDetails" [rowData]="" [animateRows]="true"
             [suppressRowClickSelection]="true"
             [floatingFilter]="true" [enableSorting]="true"
             [enableColResize]="true" (gridSizeChanged)="gridSizeChanged($event)"
+            [headerHeight]="headerHeight"
+            [suppressColumnVirtualisation]="true"
+
 
             (gridReady)="on_GridReady_details($event)"
         >
@@ -190,27 +196,50 @@
     <div ng-sidebar-content>
         <div class="top-table-toolbar">
             <div class="toggle-filter-menu">
-                <button (click)="toggleFilterSidebar()"> <i class="fas fa-bars"></i> <span class="filter-header">Filter Options</span> </button>
-                <button (click)="toggleCarrierDetailsSidebar()"><i class="fas fa-bars"></i> <span class="country-carrier-header">Carrier Details</span> </button>
+                <button (click)="toggleFilterSidebar()"> <i class="fas fa-filter"></i> <span class="filter-header">Filter Options</span> </button>
+                <button (click)="toggleCarrierDetailsSidebar()"><i class="fas fa-info-circle"></i> <span class="country-carrier-header">Carrier Details</span> </button>
             </div>
             <div class="selected-country-name-header"> {{selectedCountryName}} </div>
             <div class="toggle-country-carrier-menu" >
-                <button (click)="toggleCountryCarrierSidebar()"> <span class="country-carrier-header">Country | Carrier</span> <i class="fas fa-bars"></i> </button>
+                <button (click)="toggleCountryCarrierSidebar()"> <i class="fas fa-globe"></i> <span class="country-carrier-header">Country | Carrier</span></button>
+                <!-- <button> <i class="fas fa-shopping-cart"></i> <span class="country-carrier-header">View Cart</span></button> -->
             </div>
         </div>
 
         <div class="main-container">
-            <ag-grid-angular class="ag-theme-material" id="main-table"
+            <ag-grid-angular class="ag-theme-balham" id="main-table"
                 [columnDefs]="columnDefs" [rowData]="" [animateRows]="true"
                 [suppressRowClickSelection]="true"
                 [floatingFilter]="true" [enableSorting]="true"
                 [enableColResize]="true"
+                [suppressDragLeaveHidesColumns]="true"
+                [suppressColumnVirtualisation]="true"
+                (columnVisible)="onColumnVisible($event)"
+                (newColumnsLoaded)="onNewColumnsLoaded($event)"
 
                 (gridReady)="on_GridReady($event)"
             >
-        </ag-grid-angular>
-</div>
-        
+            </ag-grid-angular>
+
+            <button mat-button class="save-changes button">Save Changes</button>
+            <button mat-button class="discard-changes button">Discard Changes</button>
+        </div>
     </div>
     
 </ng-sidebar-container>
+
+<!-- 
+
+    [suppressDragLeaveHidesColumns]="true"
+        supresses user being able to drag columns outside of grid
+    [suppressColumnVirtualisation]="true"
+        supesses column virtualisation so columns that are not loaded into the view, 
+        aka need to scroll to;
+        This is so custom events can be binded to all cols
+
+[suppressColumnVirtualisation]="true"
+        (columnVisible)="onColumnVisible($event)"
+
+                        (dragStarted)="onColDragStarted($event)" (dragStopped)="onColDragStopped($event)" 
+                (columnMoved)="onColumnMoved($event)"
+ -->

@@ -1,0 +1,43 @@
+header {
+    margin-bottom: 10px;
+    border-bottom: 1px solid black;
+  }
+  
+  .star-container {
+    user-select: none;
+    text-align: left;
+  
+    .fa-star {
+      font-size: 20px;
+    }
+  
+    .star-hover {
+      color: gold;
+    }
+  
+    .star-clicked {
+      color: gold;
+    }
+
+    .ratings-message {
+        font-size: 14px;
+    }
+  }
+  
+.form-container {
+    margin-top: 5px;
+    margin-bottom: 5px;
+    height: auto;
+
+    .full-width {
+        width: 80%;
+        font-size: 14px;
+    }
+
+    .mat-button {
+        border: 1px solid black;
+    }
+}
+  
+  
+  

@@ -7,7 +7,7 @@ declare global { // declare global interface, set custom fn groupBy with type an
 }
 
 @Injectable()
-export class CarrierTableSharedService {
+export class MainTableSharedService {
 
     filterForPrivateRateCardsOnly(input) {
         return input.filter(data => data.ratecard_name.includes('private'));
@@ -41,8 +41,11 @@ export class CarrierTableSharedService {
         const carrierColumnDefs = [];
         carrierColumnDefs.push(
             {
-                headerName: 'Prefix', field: 'prefix',
-                cellStyle: { 'border-right': '1px solid #E0E0E0' },
+                    headerName: 'Prefix', field: 'prefix',
+                    filter: 'agNumberColumnFilter',
+                    cellStyle: { 'border-right': '1px solid #E0E0E0' },
+                    lockPosition: true,
+                    unSortIcon: true,
             },
             {
                 headerName: 'Minimum Price', field: 'minimum_price',
@@ -65,21 +68,69 @@ export class CarrierTableSharedService {
                 },
                 cellStyle: { 'border-right': '1px solid #E0E0E0' },
                 hide: true,
-            },
+            }
         );
-        for ( let i = 0; i < carrierGroupHeadersArr.length; i++ ) {
+
+        for ( let i = 0; i < carrierGroupHeadersArr.length; i++ ) { // pushing ea carrier as a col
             const sellrateFieldString = 'sellrate_' + filteredData[i].ratecard_id;
+
+            let ratingTemplate = ``;
+            if ( carrierGroupHeadersArr[i].rating >= 1 ) {
+                ratingTemplate = `<i class="fas fa-star"></i>`;
+            }
+            if ( carrierGroupHeadersArr[i].rating >= 2 ) {
+                ratingTemplate = `<i class="fas fa-star"></i><i class="fas fa-star"></i>`;
+            }
+            if ( carrierGroupHeadersArr[i].rating >= 3 ) {
+                ratingTemplate = `<i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>`;
+            }
+            if ( carrierGroupHeadersArr[i].rating >= 4 ) {
+                // tslint:disable-next-line:max-line-length
+                ratingTemplate = `<i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>`;
+            }
+            if ( carrierGroupHeadersArr[i].rating >= 5 ) {
+                // tslint:disable-next-line:max-line-length
+                ratingTemplate = `<i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>`;
+            } else {
+            }
+
+            const ratingAmount = (Math.floor(Math.random() * 999).toString());
+
+            const prefixGroupHeaderTemplate =
+                `
+                <div class="top-buttons">
+                        <div>
+                        <input class="checkbox-addToCart" type="checkbox" id="checkbox_${i}"/>
+                        <i class="fas fa-minus" id="hide_${i}"></i>
+                        </div>
+                </div>
+                `
+                +
+                `<div class="rating-container" id="ratings_${i}">${ratingTemplate}(${ratingAmount})</div>`
+                +
+                `
+                <div class="exceptions-container">
+                        <span>- Expiration Date: ${carrierGroupHeadersArr[i].end_ts.slice(0, 10)}</span>
+                        <span>- Quantity Offered: ${carrierGroupHeadersArr[i].quantity_available}</span>
+                        <span>- Resellable: ${carrierGroupHeadersArr[i].resellable}</span>
+                </div>
+                `;
             carrierColumnDefs.push(
                 {
-                    headerName: carrierGroupHeadersArr[i].groupHeaderName,
+                    headerName: prefixGroupHeaderTemplate,
                     children: [
                         {
-                            headerName: 'Sell Rate', field: sellrateFieldString,
+                            headerName: `${carrierGroupHeadersArr[i].groupHeaderName}`, field: sellrateFieldString,
+                            headerHeight: 500,
+                            filter: 'agNumberColumnFilter',
                             colId: 'carrier',
-                            cellStyle: { 'border-right': '1px solid #E0E0E0' }
-                        },
+                            cellStyle: function(params) {
+                                return {'border-right': '1px solid #E0E0E0'};
+                            },
+                            unSortIcon: true,
+                        }
                     ]
-                },
+                }
             );
         }
         return carrierColumnDefs;
@@ -112,8 +163,6 @@ export class CarrierTableSharedService {
             return carrierRowDataArr;
         }
 
-        console.log(carrierRowData);
-
         function groupDataByPrefixFn(json) {
             Array.prototype.groupBy = function (prop) {
                 return this.reduce(function (groups, item) {
@@ -133,7 +182,6 @@ export class CarrierTableSharedService {
             }
             return dataArr;
         }
-        console.log(groupDataByPrefix);
 
         function combineObjsFn(groupedData) {
             const rowData = []; // loops through an array of objects and merges multiple objects into one
@@ -144,10 +192,7 @@ export class CarrierTableSharedService {
             }
             return rowData;
         }
-        console.log(finalRowData);
 
         return finalRowData;
     }
-
-
 }

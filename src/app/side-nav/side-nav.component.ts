@@ -10,4 +10,8 @@ export class SideNavComponent {
 
   constructor() { }
 
+  onToggleSideNav() {
+      
+  }
+
 }

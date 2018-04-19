@@ -1,0 +1,41 @@
+<div mat-dialog-title>
+    <h1>Customer Reviews for <span class="carrier_title">{{data.name}}</span></h1>
+    <div class="current-ratings-container">
+        <i *ngIf="rating>=1" class="fas fa-star"></i>
+        <i *ngIf="rating>=2" class="fas fa-star"></i>
+        <i *ngIf="rating>=3" class="fas fa-star"></i>
+        <i *ngIf="rating>=4" class="fas fa-star"></i>
+        <i *ngIf="rating>=5" class="fas fa-star"></i>
+        <span>(1)</span>
+    </div>
+
+    <div class="add-review-container">
+        <h4>Add your review:</h4>
+        <app-add-ratings (event_postObj)="eventReceive_postObj($event)" ></app-add-ratings>
+    </div>
+
+</div>
+
+<div mat-dialog-content>
+    <div class="user-review-container" *ngFor="let rating of ratingsCollection">
+        <div class="user-review">
+            <div class="title-container">
+                <span class="user-group"><i class="fas fa-user-circle"></i> <span class="username">{{ rating.user }}</span></span>
+                <div class="ratings-group">
+                    <i *ngIf="rating.ratings>=1" class="fas fa-star"></i>
+                    <i *ngIf="rating.ratings>=2" class="fas fa-star"></i>
+                    <i *ngIf="rating.ratings>=3" class="fas fa-star"></i>
+                    <i *ngIf="rating.ratings>=4" class="fas fa-star"></i>
+                    <i *ngIf="rating.ratings>=5" class="fas fa-star"></i>
+                </div>
+            </div>
+            <div class="message-container">
+                <span class="title"> {{ rating.ratings_title }} </span>
+                <div class="message">
+                    {{ rating.ratings_msg }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

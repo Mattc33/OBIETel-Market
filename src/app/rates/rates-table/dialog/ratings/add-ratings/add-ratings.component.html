@@ -1,0 +1,26 @@
+<section>
+    
+    <div class="star-container">
+        <span (mouseenter)="onMouseOver($event)" (mouseleave)="onMouseLeave($event)" (click)="onMouseClickHover($event)" *ngIf="starHover" #star_1 id="star_1"><span class="fas fa-star"></span></span>
+        <span (mouseenter)="onMouseOver($event)" (mouseleave)="onMouseLeave($event)" (click)="onMouseClickHover($event)" *ngIf="starHover" #star_2 id="star_2"><span class="fas fa-star"></span></span>
+        <span (mouseenter)="onMouseOver($event)" (mouseleave)="onMouseLeave($event)" (click)="onMouseClickHover($event)" *ngIf="starHover" #star_3 id="star_3"><span class="fas fa-star"></span></span>
+        <span (mouseenter)="onMouseOver($event)" (mouseleave)="onMouseLeave($event)" (click)="onMouseClickHover($event)" *ngIf="starHover" #star_4 id="star_4"><span class="fas fa-star"></span></span>
+        <span (mouseenter)="onMouseOver($event)" (mouseleave)="onMouseLeave($event)" (click)="onMouseClickHover($event)" *ngIf="starHover" #star_5 id="star_5"><span class="fas fa-star"></span></span>
+        <span *ngIf="starClicked" #star_6 ><i class="fas fa-star"></i></span>
+        <span *ngIf="starClicked" #star_7 ><i class="fas fa-star"></i></span>
+        <span *ngIf="starClicked" #star_8 ><i class="fas fa-star"></i></span>
+        <span *ngIf="starClicked" #star_9 ><i class="fas fa-star"></i></span>
+        <span *ngIf="starClicked" #star_10 ><i class="fas fa-star"></i></span>
+        <span class="ratings-message"> {{ ratingsMsg }} </span>
+    </div>
+    
+    <div class="form-container" *ngIf="starClicked">
+        <form [formGroup]="ratingsFormGroup">
+            <mat-form-field class="full-width">
+                <textarea matInput placeholder="Leave a comment" formControlName="messageCtrl"></textarea>
+            </mat-form-field>
+        </form>
+        <button mat-button (click)="onSubmit()" [disabled]="!ratingsFormGroup.valid">Submit</button> <button mat-button (click)="onClear()">Clear</button>
+    </div>
+</section>
+      
