@@ -1,0 +1,49 @@
+section {
+    width: auto;
+    height: 100vh;
+
+    h1 {
+        margin-top: 5px;
+        font-size: 25px;
+        text-align: center;
+    }
+
+    .inner-content {
+        margin-top: 5%;
+    }
+
+    .top-section {
+        height: 50%;
+        border-bottom: 1px solid rgba(170,171,174, .5);
+
+        .by-phone {
+            float: left;
+            width: 49.92%;
+            height: 100%;
+            border-right: 1px solid rgba(170,171,174, .5);
+        }
+        
+        .by-email {
+            float: right;
+            width: 49.92%;
+            height: 100%;
+        }
+    }
+
+    .bottom-section {
+        height: 50%;
+
+        .live-chat {
+            float: left;
+            width: 49.92%;
+            height: 100%;
+            border-right: 1px solid rgba(170,171,174, .5);
+        }
+
+        .additional-info {
+            float: right;
+            width: 49.92%;
+            height: 100%;
+        }
+    }
+}

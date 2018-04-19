@@ -134,9 +134,10 @@ export class RatesTableComponent implements OnInit {
             {
                 headerName: 'Country', field: 'country', checkboxSelection: true,
                 cellStyle: { 'border-right': '1px solid #E0E0E0' },
+                unSortIcon: true,
             },
             {
-                headerName: 'Code', field: 'code', hide: true,
+                headerName: 'Code', field: 'code', hide: true, unSortIcon: true,
             }
         ];
     }
@@ -147,6 +148,7 @@ export class RatesTableComponent implements OnInit {
                 headerName: 'Carriers', field: 'groupHeaderName', colId: 'carrierToggle',
                 checkboxSelection: true,
                 headerCheckboxSelection: true,
+                unSortIcon: true,
                 // editable: true,
                 // rowDrag: true
             }
@@ -156,31 +158,31 @@ export class RatesTableComponent implements OnInit {
     private createColumnDefsDetails() {
         return [
             {
-                headerName: 'Carrier', field: 'groupHeaderName',
+                headerName: 'Carrier', field: 'groupHeaderName', unSortIcon: true,
             },
             {
-                headerName: 'Ratings', field: 'rating',
+                headerName: 'Ratings', field: 'rating', unSortIcon: true,
             },
             {
-                headerName: 'Carrier Tier', field: 'carrier_tier',
+                headerName: 'Carrier Tier', field: 'carrier_tier', unSortIcon: true,
             },
             {
-                headerName: 'Carrier Coverage', field: 'carrier_coverage',
+                headerName: 'Carrier Coverage', field: 'carrier_coverage', unSortIcon: true,
             },
             {
-                headerName: 'Quality Of Service', field: 'quality_of_service',
+                headerName: 'Quality Of Service', field: 'quality_of_service', unSortIcon: true,
             },
             {
-                headerName: 'Popular Deals', field: 'popular_deals',
+                headerName: 'Popular Deals', field: 'popular_deals', unSortIcon: true,
             },
             {
-                headerName: 'Resellable', field: 'resellable',
+                headerName: 'Resellable', field: 'resellable', unSortIcon: true,
             },
             {
-                headerName: 'Quantity', field: 'quantity_available',
+                headerName: 'Quantity', field: 'quantity_available', unSortIcon: true,
             },
             {
-                headerName: 'Expires', field: 'end_ts',
+                headerName: 'Expires', field: 'end_ts', unSortIcon: true,
             }
         ];
     }

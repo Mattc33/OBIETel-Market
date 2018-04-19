@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Output, EventEmitter } from '@angular/core';
 import { Router } from '@angular/router';
 
 @Component({
@@ -8,10 +8,17 @@ import { Router } from '@angular/router';
 })
 export class SideNavComponent {
 
-  constructor() { }
+    @Output() sidenavToggleEvent = new EventEmitter<boolean>();
 
-  onToggleSideNav() {
-      
-  }
+    isExpanded = true;
+    isSideBarMini = false;
+
+    constructor() { }
+
+    onToggleSideNav() {
+        this.isExpanded = !this.isExpanded;
+        this.isSideBarMini = !this.isSideBarMini;
+        this.sidenavToggleEvent.emit(this.isSideBarMini);
+    }
 
 }

@@ -5,11 +5,14 @@ import { Component, OnInit } from '@angular/core';
   templateUrl: './top-nav.component.html',
   styleUrls: ['./top-nav.component.scss']
 })
-export class TopNavComponent implements OnInit {
+export class TopNavComponent {
 
-  constructor() { }
+    isSideBarMini = false;
 
-  ngOnInit() {
-  }
+    constructor() { }
+
+    onToggleSideNav() {
+        this.isSideBarMini = !this.isSideBarMini;
+    }
 
 }

@@ -18,6 +18,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatInputModule } from '@angular/material/input';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
+import { MatSidenavModule } from '@angular/material/sidenav';
 
 // Main Components
 import { AppComponent } from './app.component';
@@ -79,7 +80,7 @@ import { AddRatingsComponent } from './rates/rates-table/dialog/ratings/add-rati
         SidebarModule.forRoot(),
         // Angular Materials
         MatExpansionModule, MatCardModule, MatRadioModule, MatCheckboxModule, MatInputModule, MatButtonModule,
-        MatDialogModule,
+        MatDialogModule, MatSidenavModule,
         // Routing
         RouterModule.forRoot([
             {path: '', component: DashboardComponent},

@@ -65,3 +65,7 @@ header {
     }
 
 }
+
+header.active {
+    margin-left: 60px; min-width: calc(100% - 60px);
+}
