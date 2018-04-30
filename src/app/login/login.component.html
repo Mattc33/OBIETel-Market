@@ -1,0 +1,15 @@
+<section>
+    <div class="login-form">
+        <form [formGroup]="userLoginFormGroup">
+            <mat-form-field class="username-input">
+                <mat-icon matPrefix><i class="far fa-user"></i></mat-icon>
+                <input matInput placeholder="Username" formControlName="usernameCtrl">
+            </mat-form-field>
+            <mat-form-field class="password-input">
+                <mat-icon matPrefix><i class="fas fa-key"></i></mat-icon>
+                <input matInput placeholder="Password" formControlName="passwordCtrl" [type]="hide ? 'password' : 'text'">
+            </mat-form-field>
+        </form>
+        <button mat-button [disabled]='!userLoginFormGroup.valid' (click)="userAuth()">Login</button>
+    </div>  
+</section>
