@@ -41,36 +41,13 @@ export class RatesTableComponent implements OnInit {
     private booleanCarrierDetailsSidebar = false;
     private countryCarrierPanelWidth;
 
-    // filter
-    private priceSortGroup = ['Minimum Price', 'Maximum Price', 'Reset Price'];
-
-    private currentQosToggle: string;
-    private qosFilterGroup = ['Platinum', 'Gold', 'Silver', 'Bronze', 'Tier 5'];
-    private qosSortGroup = ['Minimum Quality', 'Maximum Quality'];
-
-    private currentCarrierTierToggle: string;
-    private carrierTierFilterGroup = ['Tier 1', 'Tier 2', 'Tier 3', 'Tier 4', 'Tier 5'];
-    private carrierTierSortGroup = ['Minimum Tier', 'Maximum Tier'];
-
-    private currentRatingsToggle: any;
-    private ratingsFilterGroup = [5, 4, 3, 2, 1];
-    private ratingsSortGroup = ['Minimum Rating', 'Maximum Rating'];
-
-    private currentCoverageToggle;
-    private coverageFilterGroup = ['Whole Country', 'Partial Country'];
-
-    private currentResellableToggle;
-    private resellableFilterGroup = ['Resellable', 'Not sellable'];
-
-    private currentQuantityToggle;
-    private quantitySortGroup = ['Minimum Quantity', 'Maximum Quantity'];
-
-    private currentPopularDealToggle;
-
     constructor(
         private codesSharedService: CodesSharedService, private ratesService: RatesService,
-        private mainTableSharedService: MainTableSharedService, private ratesSharedService: RatesSharedService,
-        @Inject(ElementRef) elementRef: ElementRef, private renderer: Renderer, public dialog: MatDialog
+        private mainTableSharedService: MainTableSharedService,
+        private ratesSharedService: RatesSharedService,
+        @Inject(ElementRef) elementRef: ElementRef,
+        private renderer: Renderer,
+        public dialog: MatDialog
     ) {
         this.columnDefsCountry = this.createColumnDefsCountry();
         this.columnDefsCarrier = this.createColumnDefsCarrier();
@@ -105,9 +82,9 @@ export class RatesTableComponent implements OnInit {
             );
     }
 
-    /*
-        ~~~~~~~~~~ AG Grid Initialization ~~~~~~~~~~
-    */
+    // ================================================================================
+    // AG Grid Init
+    // ================================================================================
     on_GridReady(params): void {
         this.gridApi = params.api;
         this.columnApi = params.columnApi;
@@ -146,11 +123,7 @@ export class RatesTableComponent implements OnInit {
         return [
             {
                 headerName: 'Carriers', field: 'groupHeaderName', colId: 'carrierToggle',
-                checkboxSelection: true,
-                headerCheckboxSelection: true,
-                unSortIcon: true,
-                // editable: true,
-                // rowDrag: true
+                checkboxSelection: true, headerCheckboxSelection: true, unSortIcon: true,
             }
         ];
     }
@@ -187,9 +160,9 @@ export class RatesTableComponent implements OnInit {
         ];
     }
 
-    /*
-        ~~~~~~~~~~ Top Toolbar UI Interactions ~~~~~~~~~~
-    */
+    // ================================================================================
+    // Top toolbar
+    // ================================================================================
     toggleFilterSidebar() {
         this.booleanFilterSidebar = !this.booleanFilterSidebar;
     }
@@ -208,113 +181,33 @@ export class RatesTableComponent implements OnInit {
         this.booleanCarrierDetailsSidebar = false;
     }
 
-    /*
-        ~~~~~~~~~~ AG Grid UI Interactions ~~~~~~~~~~
-    */
+    // ================================================================================
+    // AG Grid shared Fn
+    // ================================================================================
     gridSizeChanged(params) {
         params.api.sizeColumnsToFit();
     }
 
-    rowSelectedCountry(params) {
-        this.gridApi.setRowData([]);
-        this.gridApiCarrier.setRowData([]);
-        this.columnDefs = [];
-
-        const countryCode = this.gridApiCountry.getSelectedRows();
-        if ( countryCode.length > 0 ) {
-            const selectedCode = this.gridApiCountry.getSelectedRows()[0].code;
-            this.get_specificCarrierRatesByCountry(selectedCode); // API Call
-            this.selectedCountryName = this.gridApiCountry.getSelectedRows()[0].country;
-        } else {
+    // ================================================================================
+    // Events
+    // ================================================================================
+    receiveFilterSettings(params) {
+        if  (params.event === 'price') {
+            if ( params.status === 'lowest' ) {
+                this.sortByLowestPrice();
+            }
+            if ( params.status === 'highest' ) {
+                this.sortByHighestPrice();
+            }
+            if ( params.status === 'reset' ) {
+                this.sortByResetPrice();
+            }
         }
     }
 
-    rowSelectedCarrier(params) {
-        const mainGridColArr = this.columnApi.getColumnState();
-        this.detectColVisibility(params.node.selected, params.rowIndex);
-    }
-
-    detectColVisibility(condition: boolean, rowIndex: number) {
-        if ( condition === true ) {
-            let colId = 'carrier';
-            if ( rowIndex > 0 ) {
-                colId = `carrier_${rowIndex}`;
-            }
-            this.showCol(colId);
-        } else {
-            let colId = 'carrier';
-            if ( rowIndex > 0) {
-                colId = `carrier_${rowIndex}`;
-            }
-            this.hideCol(colId);
-        }
-    }
-
-    /*
-        ~~~~~~~~~~~~ AG Grid Sort | Filters ~~~~~~~~~~
-    */
-    sortByMinimumPrice() {
-        const sort = [
-            {
-                colId: 'minimum_price',
-                sort: 'asc'
-            }
-        ];
-        this.gridApi.setSortModel(sort);
-    }
-
-    sortByMaximumPrice() {
-        const sort = [
-            {
-                colId: 'maximum_price',
-                sort: 'desc'
-            }
-        ];
-        this.gridApi.setSortModel(sort);
-    }
-
-    sortByResetPrice() {
-        const sort = [
-            {
-                colId: 'minimum_price',
-                sort: 'null'
-            },
-            {
-                colId: 'maximum_price',
-                sort: 'null'
-            }
-        ];
-        this.gridApi.setSortModel(sort);
-    }
-
-    sortByPrice(params) {
-        if (params.value === 'Minimum Price') {
-            this.sortByMinimumPrice();
-        }
-        if (params.value === 'Maximum Price') {
-            this.sortByMaximumPrice();
-        }
-        if (params.value === 'Reset Price') {
-            this.sortByResetPrice();
-        }
-    }
-
-    hideCol(colId: string) {
-        this.columnApi.setColumnVisible(colId, false, null);
-    }
-
-    showCol(colId: string) {
-        this.columnApi.setColumnVisible(colId, true, null);
-    }
-
-    sortCol() {
-        const colStateArr = this.columnApi.getColumnState();
-        console.log(colStateArr);
-    }
-
-    /*
-        ~~~~~~~~~~~~ AG Grid | For Col UI ~~~~~~~~~~
-    */
+    // ================================================================================
+    // AG Grid Main Table - Header - Assigning Events
+    // ================================================================================
     onNewColumnsLoaded(params) {
         this.assignEventHandler();
         this.assignRatingsEventHandler();
@@ -325,7 +218,6 @@ export class RatesTableComponent implements OnInit {
         this.reassignRatingsEventHandler(params.column.colId);
         this.onCheckStatusAfterHideCol();
     }
-    // What if instead of binding event reassignment to column visible I do it to the click of the other grid instead?
 
     assignEventHandler() {
         for ( let i = 0; i < this.howManyCarriers; i++ ) {
@@ -364,32 +256,65 @@ export class RatesTableComponent implements OnInit {
         });
     }
 
-    /*
-        ~~~~~~~~~~ General Purpose Fn's Returning Data ~~~~~~~~~~
-    */
-    getCarrierDatabaseId(rowNodeId): number {
-        return this.gridApiCarrier.getRowNode(rowNodeId).data.carrier_id;
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    // AG Grid Main Table - Header - Ratings
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    onRatingsClicked(event, id) {
+        this.closeAllSideBars();
+        const carrierObj = {
+            carrier_name: this.getCarrierDatabaseName(id),
+            ratings: this.getCarrierDatabaseRatings(id)
+        };
+        this.openDialogRatings(carrierObj);
     }
 
-    getCarrierDatabaseName(rowNodeId): string {
-        return this.gridApiCarrier.getRowNode(rowNodeId).data.carrier_name;
+    openDialogRatings(carrierObj): void {
+        const dialogRef = this.dialog.open(RatingsComponent, {
+            width: '30vw',
+            data: {
+                    name: carrierObj.carrier_name,
+                    rating: carrierObj.ratings
+                  }
+        });
+        dialogRef.afterClosed().subscribe(result => {
+        });
     }
 
-    getCarrierDatabaseRatings(rowNodeId): number {
-        return this.gridApiCarrier.getRowNode(rowNodeId).data.rating;
-    }
-
-    /*
-        ~~~~~~~~~~~~ AG Grid | For Col UI |  Hide Columns ~~~~~~~~~~
-    */
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    // AG Grid Main Table - Header - Hide
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     deselectCarrierTableCheckbox(event, id) {
         const rowNode = this.gridApiCarrier.getRowNode(id);
         rowNode.setSelected(false);
     }
 
-    /*
-        ~~~~~~~~~~~~ AG Grid | For Col UI | Add to Selected ~~~~~~~~~~
-    */
+    detectColVisibility(condition: boolean, rowIndex: number) {
+        if ( condition === true ) {
+            let colId = 'carrier';
+            if ( rowIndex > 0 ) {
+                colId = `carrier_${rowIndex}`;
+            }
+            this.showCol(colId);
+        } else {
+            let colId = 'carrier';
+            if ( rowIndex > 0) {
+                colId = `carrier_${rowIndex}`;
+            }
+            this.hideCol(colId);
+        }
+    }
+
+    hideCol(colId: string) {
+        this.columnApi.setColumnVisible(colId, false, null);
+    }
+
+    showCol(colId: string) {
+        this.columnApi.setColumnVisible(colId, true, null);
+    }
+
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    // AG Grid Main Table - Header - Checkbox Event
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     onCheckboxSelection(event, id): void { // main event, since dynamic generated carrier col[0] has a different id conditional checks
         const checkedStatus: boolean = event.target.checked;
 
@@ -413,8 +338,6 @@ export class RatesTableComponent implements OnInit {
             this.removeColCssClass(`div[col-id="${id}_0"]`, 'highlight-column');
             this.removeDeselectedCarrier(id);
         }
-
-        this.onCheckStatusForCarrierTable();
     }
 
     addColCssClass(element: string, cssClass: string) {
@@ -423,21 +346,6 @@ export class RatesTableComponent implements OnInit {
 
     removeColCssClass(element: string, cssClass: string) {
         this.elementRef.nativeElement.querySelector(`${element}`).classList.remove(`${cssClass}`);
-    }
-
-    addSelectedCarrier(colId: number, carrierId: number, carrierName: string) {
-        this.currentlySelectedCarriers.push(
-            {
-                colId: colId,
-                carrierId: carrierId,
-                carrierName: carrierName
-            }
-        );
-    }
-
-    removeDeselectedCarrier(colId: number) {
-        const filteredArr = this.currentlySelectedCarriers.filter( obj => obj.colId !== `${colId}` );
-        this.currentlySelectedCarriers = filteredArr;
     }
 
     onCheckStatusAfterHideCol() { // extra fn to ensure visual aspect is maintained on col hide
@@ -456,101 +364,103 @@ export class RatesTableComponent implements OnInit {
         }
     }
 
-    onCheckStatusForCarrierTable() {
-        for ( let i = 0; i < this.currentlySelectedCarriers.length; i++) {
-            const colId = this.currentlySelectedCarriers[i].colId;
-            const node = this.gridApiCarrier.getRowNode(colId);
+    addSelectedCarrier(colId: number, carrierId: number, carrierName: string) {
+        this.currentlySelectedCarriers.push(
+            {
+                colId: colId,
+                carrierId: carrierId,
+                carrierName: carrierName
+            }
+        );
+    }
+
+    removeDeselectedCarrier(colId: number) {
+        const filteredArr = this.currentlySelectedCarriers.filter( obj => obj.colId !== `${colId}` );
+        this.currentlySelectedCarriers = filteredArr;
+    }
+
+    // ================================================================================
+    // AG Grid Main Table - Header - Sorts & Filters
+    // ================================================================================
+    sortByLowestPrice() {
+        const sort = [
+            {
+                colId: 'lowest_price',
+                sort: 'asc'
+            }
+        ];
+        this.gridApi.setSortModel(sort);
+        this.showCol(sort[0].colId);
+        this.hideCol('highest_price');
+    }
+
+    sortByHighestPrice() {
+        const sort = [
+            {
+                colId: 'highest_price',
+                sort: 'desc'
+            }
+        ];
+        this.gridApi.setSortModel(sort);
+        this.showCol(sort[0].colId);
+        this.hideCol('lowest_price');
+    }
+
+    sortByResetPrice() {
+        const sort = [
+            {
+                colId: 'lowest_price',
+                sort: 'null'
+            },
+            {
+                colId: 'highest_price',
+                sort: 'null'
+            }
+        ];
+        this.gridApi.setSortModel(sort);
+        this.hideCol(sort[0].colId);
+        this.hideCol(sort[1].colId);
+    }
+
+    // ================================================================================
+    // AG Grid Country Table
+    // ================================================================================
+    rowSelectedCountry(params) {
+        this.gridApi.setRowData([]);
+        this.gridApiCarrier.setRowData([]);
+        this.columnDefs = [];
+
+        // Emit event back to filter-child-component to reset form
+
+        const countryCode = this.gridApiCountry.getSelectedRows();
+        if ( countryCode.length > 0 ) {
+            const selectedCode = this.gridApiCountry.getSelectedRows()[0].code;
+            this.get_specificCarrierRatesByCountry(selectedCode); // API Call
+            this.selectedCountryName = this.gridApiCountry.getSelectedRows()[0].country;
         }
     }
 
-    // onEditingCell(key, input, status) { // On checkbox selection edit cell of carrier table
-    //     if ( status === true ) {
-    //         const formattedInput = `${input} - [Selected]`;
-    //         this.gridApiCarrier.setFocusedCell(key, 'carrierToggle');
-    //         this.gridApiCarrier.startEditingCell(
-    //             {
-    //                 rowIndex: key,
-    //                 colKey: 'carrierToggle',
-    //                 keyPress: key,
-    //                 charPress: formattedInput
-    //             }
-    //         );
-    //     }
-    //     if ( status === false) {
-    //         const formattedInput = `${input}`;
-    //         this.gridApiCarrier.setFocusedCell(key, 'carrierToggle');
-    //         this.gridApiCarrier.startEditingCell(
-    //             {
-    //                 rowIndex: key,
-    //                 colKey: 'carrierToggle',
-    //                 keyPress: key,
-    //                 charPress: formattedInput
-    //             }
-    //         );
-    //     }
-    //     this.gridApiCarrier.stopEditing();
-    // }
-
-    // onRowDragEnter(params) {
-    //     console.log('enter -->');
-    //     console.log(params);
-
-    //     this.enterIndex = params.overIndex;
-    // }
-
-    // onRowDragEnd(params) {
-    //     console.log('end -->');
-    //     console.log(params);
-
-    //     const endIndex = params.overIndex;
-    //     this.columnApi.moveColumnByIndex(this.enterIndex + 3, endIndex + 3, null);
-    // }
-
-    // onColDragStarted(params) {
-    //     console.log(params);
-    // }
-
-    // onColDragStopped(params) {
-    //     console.log(params);
-    // }
-
-    // onColumnMoved(params) {
-    //     console.log(params.column.colId);
-    //     console.log(params.toIndex);
-
-    //     // this.gridApiCarrier.
-    // }
-
-    /*
-        ~~~~~~~~~~ AG Grid | For Column UI | Ratings ~~~~~~~~~~
-    */
-    onRatingsClicked(event, id) {
-        this.closeAllSideBars();
-
-        const carrierObj = {
-            carrier_name: this.getCarrierDatabaseName(id),
-            ratings: this.getCarrierDatabaseRatings(id)
-        };
-        this.openDialogRatings(carrierObj);
+    // ================================================================================
+    // AG Grid Carrier Table
+    // ================================================================================
+    rowSelectedCarrier(params) {
+        const mainGridColArr = this.columnApi.getColumnState();
+        this.detectColVisibility(params.node.selected, params.rowIndex);
     }
 
-    /*
-        ~~~~~~~~~~~~  Dialog ~~~~~~~~~~
-    */
-    openDialogRatings(carrierObj): void {
-        console.log('test');
-        const dialogRef = this.dialog.open(RatingsComponent, {
-            width: '30vw',
-            data:
-            {
-                name: carrierObj.carrier_name,
-                rating: carrierObj.ratings
-            }
-        });
+    // ================================================================================
+    // AG Grid Carrier Table - General purpose fn returning data
+    // ================================================================================
+    getCarrierDatabaseId(rowNodeId): number {
+        return this.gridApiCarrier.getRowNode(rowNodeId).data.carrier_id;
+    }
 
-        dialogRef.afterClosed().subscribe(result => {
-            console.log('The dialog was closed');
-        });
+    getCarrierDatabaseName(rowNodeId): string {
+        return this.gridApiCarrier.getRowNode(rowNodeId).data.carrier_name;
+    }
+
+    getCarrierDatabaseRatings(rowNodeId): number {
+        return this.gridApiCarrier.getRowNode(rowNodeId).data.rating;
     }
 
 }

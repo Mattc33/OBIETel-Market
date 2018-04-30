@@ -1,0 +1,150 @@
+<div class="filter-container">
+
+    <header>Filter By:</header>
+
+        <hr>
+
+        <form [formGroup]="filterFormGroup" class="filter-group">
+
+            <div class="filter-group"> 
+                <div class="filter-option price">
+                    <h4>Price</h4>
+                    <div class="filter-option-inner">
+                        <mat-checkbox disableRipple formControlName="lowestPriceCtrl" (change)="onPriceChange()" (click)="onLowestPriceClick()">Lowest Price</mat-checkbox> <br>
+                        <mat-checkbox disableRipple formControlName="highestPriceCtrl" (change)="onPriceChange()" (click)="onHighestPriceClick()">Highest Price</mat-checkbox>
+                    </div>
+                </div>
+            </div>
+
+            <hr>
+        </form>
+            <!--
+            <- - <div class="filter-group"> <!- - QOS - ->
+                <div class="filter-option-title">Quality of Service</div>
+                <mat-radio-group class="filter-radio-group" [(ngModel)]="currentQosToggle">
+                    <mat-radio-button class="qos-radio-button" *ngFor="let qos of qosFilterGroup" [value]="qos">
+                        {{qos}}
+                    </mat-radio-button>
+                </mat-radio-group>
+                <hr>
+                <mat-radio-group class="filter-radio-group inner" [(ngModel)]="currentQosToggle">
+                    <mat-radio-button class="ratings-sort-radio-button" *ngFor="let qos of qosSortGroup" [value]="qos">
+                        {{qos}}
+                    </mat-radio-button>
+                </mat-radio-group>    
+            </div>
+
+            <hr>
+
+            <div class="filter-group"> <!- - Carrier Tier - ->
+                <div class="filter-option-title">Carrier Tier</div>
+                <mat-radio-group class="filter-radio-group" [(ngModel)]="currentCarrierTierToggle">
+                    <mat-radio-button class="carrierTier-filter-radio-button" *ngFor="let tier of carrierTierFilterGroup" [value]="tier">
+                        {{tier}}
+                    </mat-radio-button>
+                </mat-radio-group>
+                <hr>
+                <mat-radio-group class="filter-radio-group inner" [(ngModel)]="currentCarrierTierToggle">
+                    <mat-radio-button class="carrierTier-sort-radio-button" *ngFor="let tier of carrierTierSortGroup" [value]="tier">
+                        {{tier}}
+                    </mat-radio-button>
+                </mat-radio-group>    
+            </div>            
+
+            <hr>
+
+            <div class="filter-group"> <!- - Ratings - ->
+                <div class="filter-option-title">Ratings</div>
+                <mat-radio-group class="filter-radio-group" [(ngModel)]="currentRatingToggle">
+                    <mat-radio-button class="ratings-radio-button" *ngFor="let rating of ratingsFilterGroup" [value]="rating">
+                        <i *ngIf="rating>=1" class="far fa-star"></i>
+                        <i *ngIf="rating>=2" class="far fa-star"></i>
+                        <i *ngIf="rating>=3" class="far fa-star"></i>
+                        <i *ngIf="rating>=4" class="far fa-star"></i>
+                        <i *ngIf="rating>=5" class="far fa-star"></i>
+                    </mat-radio-button>
+                </mat-radio-group>
+                <hr>
+                <mat-radio-group class="filter-radio-group inner" [(ngModel)]="currentRatingToggle">
+                    <mat-radio-button class="ratings-sort-radio-button" *ngFor="let rating of ratingsSortGroup" [value]="rating">
+                        {{rating}}
+                    </mat-radio-button>
+                </mat-radio-group>               
+            </div>
+
+            <hr>
+
+            <div class="filter-group"> <!- - Coverage - ->
+                <div class="filter-option-title">Carrier Coverage</div>
+                <mat-radio-group class="filter-radio-group" [(ngModel)]="currentCoverageToggle">
+                    <mat-radio-button class="price-radio-button" *ngFor="let coverage of coverageFilterGroup" [value]="coverage">
+                        {{coverage}}
+                    </mat-radio-button>
+                </mat-radio-group>
+            </div>
+
+            <hr>
+
+            <div class="filter-group"> <!- - Resellable - ->
+                <div class="filter-option-title">Resellable Ratecards</div>
+                <mat-radio-group class="filter-radio-group" [(ngModel)]="currentResellableToggle">
+                    <mat-radio-button class="price-radio-button" *ngFor="let resellable of resellableFilterGroup" [value]="resellable">
+                        {{resellable}}
+                    </mat-radio-button>
+                </mat-radio-group>
+            </div>
+
+            <hr>
+
+            <div class="filter-group"> <!- - Expiration Date - ->
+                <div class="filter-option-title">Expiration Date</div>
+                <br>
+                Insert Date Module Here
+            </div>
+
+            <hr>
+
+            <div class="filter-group"> <!- - Quantity Available - ->
+                <div class="filter-option-title">Quantity Available</div>
+                <br>
+                Range: 
+                <hr>
+                <mat-radio-group class="filter-radio-group" [(ngModel)]="currentQuantityToggle">
+                    <mat-radio-button class="price-radio-button" *ngFor="let quantity of quantitySortGroup" [value]="quantity">
+                        {{quantity}}
+                    </mat-radio-button>
+                </mat-radio-group>
+            </div>
+
+            <hr>
+
+            <div class="filter-group"> <!- - Popular Deals - ->
+                <div class="filter-option-title">Popular Deals</div>
+                <div class="checkbox-container">
+                    <mat-checkbox class="checkbox"></mat-checkbox>
+                </div>
+            </div>
+
+            <hr>
+
+            <div class="filter-group"> <!- - Whitelisted - ->
+                <div class="filter-option-title">Toggle Whitelist</div>
+                <div class="checkbox-container">
+                    <mat-checkbox class="checkbox"></mat-checkbox>
+                </div>
+            </div>
+
+            <hr>
+
+            <div class="filter-group"> <!- - Blacklisted - ->
+                <div class="filter-option-title">Toggle Blacklist</div>
+                <div class="checkbox-container">
+                    <mat-checkbox class="checkbox"></mat-checkbox>
+                </div>
+            </div>
+
+            <hr> -->
+
+
+
+    </div>

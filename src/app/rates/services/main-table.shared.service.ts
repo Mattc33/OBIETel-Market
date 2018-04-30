@@ -48,7 +48,8 @@ export class MainTableSharedService {
                     unSortIcon: true,
             },
             {
-                headerName: 'Minimum Price', field: 'minimum_price',
+                headerName: 'Lowest Price', field: 'lowest_price',
+                filter: 'agNumberColumnFilter',
                 valueGetter(params) {
                     const arr = Object.values(params.data);
                     arr.shift();
@@ -59,7 +60,8 @@ export class MainTableSharedService {
                 hide: true,
             },
             {
-                headerName: 'Maximum Price', field: 'maximum_price',
+                headerName: 'Highest Price', field: 'highest_price',
+                filter: 'agNumberColumnFilter',
                 valueGetter(params) {
                     const arr = Object.values(params.data);
                     arr.shift();

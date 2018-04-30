@@ -13,8 +13,6 @@ export class SideNavComponent {
     isExpanded = true;
     isSideBarMini = false;
 
-    constructor() { }
-
     onToggleSideNav() {
         this.isExpanded = !this.isExpanded;
         this.isSideBarMini = !this.isSideBarMini;

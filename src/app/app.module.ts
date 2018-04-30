@@ -15,10 +15,10 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatCardModule } from '@angular/material/card';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatInputModule } from '@angular/material/input';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatFormFieldModule, MatInputModule } from '@angular/material';
 
 // Main Components
 import { AppComponent } from './app.component';
@@ -48,6 +48,7 @@ import { ContactusComponent } from './contactus/contactus.component';
 
 import { MarketComponent } from './market/market.component';
 import { AddRatingsComponent } from './rates/rates-table/dialog/ratings/add-ratings/add-ratings.component';
+import { RatesTableFilterComponent } from './rates/rates-table/rates-table-filter/rates-table-filter.component';
 
 @NgModule({
   declarations: [
@@ -72,6 +73,8 @@ import { AddRatingsComponent } from './rates/rates-table/dialog/ratings/add-rati
 
         AddRatingsComponent,
 
+        RatesTableFilterComponent,
+
 
   ],
   imports: [
@@ -80,7 +83,7 @@ import { AddRatingsComponent } from './rates/rates-table/dialog/ratings/add-rati
         SidebarModule.forRoot(),
         // Angular Materials
         MatExpansionModule, MatCardModule, MatRadioModule, MatCheckboxModule, MatInputModule, MatButtonModule,
-        MatDialogModule, MatSidenavModule,
+        MatDialogModule, MatSidenavModule, MatFormFieldModule,
         // Routing
         RouterModule.forRoot([
             {path: '', component: DashboardComponent},

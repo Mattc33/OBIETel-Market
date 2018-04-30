@@ -1,26 +1,41 @@
 <section>
-    <div class="top-section">
-        <div class="by-phone">
-            <div class="inner-content">
-                <h1>Phone:</h1>
-            </div>
-        </div>
+
+    <div class="left-section">
         <div class="by-email">
             <div class="inner-content">
-                <h1>Email:</h1>
-            </div>
-        </div>
-   </div>
-    <div class="bottom-section">
-        <div class="live-chat">
-            <div class="inner-content">
-                <h1>Chat:</h1>
-            </div>
-        </div>
-        <div class="additional-info">
-            <div class="inner-content">
-                <h1>Additional Information:</h1>
+                <h1>Get in Touch</h1>
+                    <form [formGroup]="ratingsFormGroup">
+
+                        <mat-form-field class="full-width">
+                            <input matInput placeholder="Your Email" formControlName="titleCtrl">
+                        </mat-form-field>
+                    
+                        <mat-form-field class="full-width" id="textarea">
+                            <textarea matInput placeholder="Your Message" formControlName="messageCtrl" matTextareaAutosize matAutosizeMinRows="4"
+                            matAutosizeMaxRows="10"></textarea>
+                        </mat-form-field>
+                        
+                    </form>
+
+                    <button mat-button>Submit</button>
             </div>
         </div>
     </div>
+
+    <div class="right-section">
+        <div class="connect">
+            <div class="inner-content-top">
+                <h1>Connect with Us</h1>
+                <div>
+                    Phone number: ###-###-#### <br>
+                </div>
+                <div>Email: obietel@support.com</div>
+            </div>
+
+            <div class="inner-content-bottom">
+                <h1>Live Chat</h1>
+            </div>
+        </div>
+    </div>
+
 </section>
