@@ -258,9 +258,7 @@ export class RatesTableComponent implements OnInit {
             }
         }
         if (params.event === 'rating') {
-            if ( params.status === '4' ) {
-                console.log(params.status);
-            }
+            this.sortByNumberOfStarOrHigher(params.status);
         }
     }
 
@@ -302,12 +300,12 @@ export class RatesTableComponent implements OnInit {
     }
 
     reassignRatingsEventHandler(colId) {
-        let splitColId = parseInt(colId.split('_')[1], 0);
-        if ( splitColId > 0 ) {
-            splitColId = splitColId;
-        } else {
-            splitColId = 0;
-        }
+        const splitColId = parseInt(colId.split('_')[1], 0);
+        // if ( splitColId > 0 ) {
+        //     splitColId = splitColId;
+        // } else {
+        //     splitColId = 0;
+        // }
 
         const ratings = this.elementRef.nativeElement.querySelector(`#ratings_${splitColId}`);
         const e_ratings = this.renderer.listen(ratings, 'click', (event) => {
@@ -348,17 +346,11 @@ export class RatesTableComponent implements OnInit {
     }
 
     detectColVisibility(condition: boolean, rowIndex: number) {
+        const colId = `carrier_${rowIndex}`;
         if ( condition === true ) {
-            let colId = 'carrier';
-            if ( rowIndex > 0 ) {
-                colId = `carrier_${rowIndex}`;
-            }
             this.showCol(colId);
-        } else {
-            let colId = 'carrier';
-            if ( rowIndex > 0) {
-                colId = `carrier_${rowIndex}`;
-            }
+        }
+        if ( condition === false ) {
             this.hideCol(colId);
         }
     }
@@ -376,23 +368,12 @@ export class RatesTableComponent implements OnInit {
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     onCheckboxSelection(event, id): void { // main event, since dynamic generated carrier col[0] has a different id conditional checks
         const checkedStatus: boolean = event.target.checked;
-
-        if ( checkedStatus === true && id < 1 ) { // if checkbox true and carrier col[0] detected
-            this.addColCssClass(`div[col-id="carrier"]`, `highlight-column`);
-            this.addColCssClass(`div[col-id="0_0"]`, 'highlight-column');
-            this.addSelectedCarrier(id, this.getCarrierDatabaseId(id), this.getCarrierDatabaseName(id));
-        }
-        if ( checkedStatus === true && id > 0 ) { // if checkbox true and carrier col[>0] detected
+        if ( checkedStatus === true && id >= 0 ) { // if checkbox true and carrier col[>0] detected
             this.addColCssClass(`div[col-id="carrier_${id}"]`, `highlight-column`);
             this.addColCssClass(`div[col-id="${id}_0"]`, 'highlight-column');
             this.addSelectedCarrier(id, this.getCarrierDatabaseId(id), this.getCarrierDatabaseName(id));
         }
-        if ( checkedStatus === false && id < 1 ) { // if checkbox false and carrier col[0] detected
-            this.removeColCssClass(`div[col-id="carrier"]`, `highlight-column`);
-            this.removeColCssClass(`div[col-id="0_0"]`, 'highlight-column');
-            this.removeDeselectedCarrier(id);
-        }
-        if ( checkedStatus === false && id > 0 ) { // if checkbox false and carrier col[>0] detected
+        if ( checkedStatus === false && id >= 0 ) { // if checkbox false and carrier col[>0] detected
             this.removeColCssClass(`div[col-id="carrier_${id}"]`, `highlight-column`);
             this.removeColCssClass(`div[col-id="${id}_0"]`, 'highlight-column');
             this.removeDeselectedCarrier(id);
@@ -408,18 +389,12 @@ export class RatesTableComponent implements OnInit {
     }
 
     onCheckStatusAfterHideCol() { // extra fn to ensure visual aspect is maintained on col hide
-        for ( let i = 0; i < this.currentlySelectedCarriers.length; i++) {
-            const id = this.currentlySelectedCarriers[i].colId;
-            if ( id < 1 ) {
-                this.addColCssClass(`div[col-id="carrier"]`, `highlight-column`);
-                this.addColCssClass(`div[col-id="0_0"]`, 'highlight-column');
-                this.elementRef.nativeElement.querySelector(`#checkbox_${id}`).checked = true;
-            }
-            if ( id > 0 ) {
-                this.addColCssClass(`div[col-id="carrier_${id}"]`, `highlight-column`);
-                this.addColCssClass(`div[col-id="${id}_0"]`, 'highlight-column');
-                this.elementRef.nativeElement.querySelector(`#checkbox_${id}`).checked = true;
-            }
+        const currentlySelectedCarriers = this.currentlySelectedCarriers;
+        for ( let i = 0; i < currentlySelectedCarriers.length; i++ ) {
+            const colId = currentlySelectedCarriers[i].colId;
+            this.addColCssClass(`div[col-id="carrier_${colId}"]`, `highlight-column`);
+            this.addColCssClass(`div[col-id="${colId}_0"]`, 'highlight-column');
+            this.elementRef.nativeElement.querySelector(`#checkbox_${colId}`).checked = true;
         }
     }
 
@@ -484,8 +459,31 @@ export class RatesTableComponent implements OnInit {
     // ================================================================================
     // AG Grid Main Table - Sorts & Filters - Rating
     // ================================================================================
-    sortByFourStarOrHigher() {
+    sortByNumberOfStarOrHigher(starNum: number) {
+        this.loopThroughAndShowAll();
+        const carrierRatingArr = this.getArrayOfCarrierIdAndRating();
+        const filteredForNumberStarOrHigher = carrierRatingArr.filter(data => data.rating >= starNum);
+        const filteredForLowerThanNumberStar = carrierRatingArr.filter(data => data.rating < starNum);
 
+        this.loopThroughAndHide(filteredForLowerThanNumberStar);
+    }
+
+    loopThroughAndShowAll() {
+        for (let i = 0; i < this.howManyCarriers; i++) {
+            const colId = `carrier_${[i]}`;
+            this.showCol(colId);
+        }
+    }
+
+    loopThroughAndHide(hideTheseCol) {
+        for (let i = 0; i < hideTheseCol.length; i++) {
+            const colId = `carrier_${hideTheseCol[i].colId}`;
+            this.hideCol(colId);
+        }
+    }
+
+    loopThroughAndSortHighToLow(sortTheseCol) {
+        // for (let i = 0; i < sortTheseCol.length; i++) { this.hideCol(sortTheseCol.colId); }
     }
 
     // ================================================================================
@@ -529,8 +527,16 @@ export class RatesTableComponent implements OnInit {
         return this.gridApiCarrier.getRowNode(rowNodeId).data.rating;
     }
 
-    getArrayOfCarrierIdAndRating(): Array<[{}]> {
-        // return this.columnApi.get
+    getArrayOfCarrierIdAndRating() {
+        const carrierRatingArr = [];
+        for ( let i = 0; i < this.howManyCarriers; i++) {
+            const gridDetailRowData = this.gridApiDetails.getDisplayedRowAtIndex(i);
+            carrierRatingArr.push({
+                colId: parseInt(gridDetailRowData.data.carrier_name.slice(7), 0) - 1,
+                rating: gridDetailRowData.data.rating
+            });
+        }
+        return carrierRatingArr;
     }
 
 }

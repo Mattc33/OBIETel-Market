@@ -15,7 +15,6 @@ export class RatesTableFilterComponent implements OnInit {
     priceFilterFormGroup: FormGroup;
     ratingFilterFormGroup: FormGroup;
 
-
     constructor(
         private _fb: FormBuilder
     ) {
@@ -84,11 +83,10 @@ export class RatesTableFilterComponent implements OnInit {
     }
 
     // ================================================================================
-    // Sorts & Filters - Price
+    // Sorts & Filters - Rating
     // ================================================================================
-    onClickRating(event) {
-        const getTargetRatingValue = event.target.attributes.value.value;
-        this.emitFilterEventBuilder('rating', getTargetRatingValue);
+    onClickRating(ratingNumber: number) {
+        this.emitFilterEventBuilder('rating', ratingNumber.toString());
     }
 
 }

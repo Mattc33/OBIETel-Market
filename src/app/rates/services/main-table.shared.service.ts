@@ -125,7 +125,7 @@ export class MainTableSharedService {
                             headerName: `${carrierGroupHeadersArr[i].groupHeaderName}`, field: sellrateFieldString,
                             headerHeight: 500,
                             filter: 'agNumberColumnFilter',
-                            colId: 'carrier',
+                            colId: `carrier_${i}`, // This will be the columnID to use for functionaility
                             cellStyle: function(params) {
                                 return {'border-right': '1px solid #E0E0E0'};
                             },

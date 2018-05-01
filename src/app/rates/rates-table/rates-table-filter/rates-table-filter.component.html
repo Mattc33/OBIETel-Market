@@ -18,21 +18,21 @@
 
         <hr>
 
-        <form [formGroup]="ratingFilterFormGroup" class="filter-group">
+        <form class="filter-group">
             <div class="filter-group">
                 <div class="filter-option rating">
                     <h4>Rating</h4>
                     <div class="filter-option-inner">
-                        <div class="rate" (click)="onClickRating($event)" value="4" formControlName="fourStarCtrl">
+                        <div class="rate" (click)="onClickRating(4)">
                             <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i> & up
                         </div>
-                        <div class="rate" (click)="onClickRating($event)" value="3">
+                        <div class="rate" (click)="onClickRating(3)">
                             <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i> & up
                         </div>
-                        <div class="rate" (click)="onClickRating($event)" value="2">
+                        <div class="rate" (click)="onClickRating(2)">
                             <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i> & up
                         </div>
-                        <div class="rate" (click)="onClickRating($event)" value="1">
+                        <div class="rate" (click)="onClickRating(1)">
                             <i class="fas fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i> & up
                         </div>
                     </div>

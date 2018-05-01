@@ -35,7 +35,7 @@ export class RatesService {
 
     // Get mock data
     get_mockDataChina() {
-        return this.http.get('https://rawgit.com/Mattc33/MattsCDN/master/json/mockup-obietel/china.json')
+        return this.http.get('https://raw.githubusercontent.com/Mattc33/MattsCDN/master/json/mockup-obietel/china.json')
             .map(res => res.json())
             .catch(this.handleError)
             .do(data => console.log('server data:', data));
