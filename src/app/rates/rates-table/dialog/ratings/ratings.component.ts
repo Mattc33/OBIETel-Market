@@ -11,8 +11,8 @@ import { RatesTableComponent } from './../../rates-table.component';
 })
 export class RatingsComponent implements OnInit {
 
-    private rating;
-    private ratingsCollection =
+    rating;
+    ratingsCollection =
         [
             {
                 ratings: '4',

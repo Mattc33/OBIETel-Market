@@ -61,7 +61,7 @@
             }
         }
 
-        .price  {
+        .price {
             
         }
 
@@ -73,6 +73,16 @@
 
         .inner {
             margin-top: 0px;
+        }
+
+        .rate {
+            width: 100%;
+            padding-bottom: 3px;
+            display: inline-block;
+            &:hover {
+                color: blue;
+                cursor: pointer;
+            }
         }
 
     }

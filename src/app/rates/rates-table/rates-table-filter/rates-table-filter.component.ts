@@ -8,9 +8,13 @@ import { FormArray, FormBuilder, FormGroup, Validators, FormControl } from '@ang
 })
 export class RatesTableFilterComponent implements OnInit {
 
+    // events
     @Output() emitFilterSettings = new EventEmitter();
 
-    private filterFormGroup: FormGroup;
+    // Form Groups
+    priceFilterFormGroup: FormGroup;
+    ratingFilterFormGroup: FormGroup;
+
 
     constructor(
         private _fb: FormBuilder
@@ -18,12 +22,13 @@ export class RatesTableFilterComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.filterFormGroup = this._fb.group({
-            lowestPriceCtrl: [false, Validators.required],
-            highestPriceCtrl: [false, Validators.required]
-        });
+        this.priceFilterFormGroup = this.construct_priceFilterFormGroup();
+        this.ratingFilterFormGroup = this.construct_ratingFilterFormGroup();
     }
 
+    // ================================================================================
+    // Global Event Handler
+    // ================================================================================
     emitFilterEventBuilder(_event: string, _status: string) {
         this.emitFilterSettings.emit(
             {
@@ -33,9 +38,31 @@ export class RatesTableFilterComponent implements OnInit {
         );
     }
 
-    onPriceChange(params) {
-        const lowestPriceVal = this.filterFormGroup.get('lowestPriceCtrl').value;
-        const highestPriceVal = this.filterFormGroup.get('highestPriceCtrl').value;
+    // ================================================================================
+    // Form Group Construction
+    // ================================================================================
+    construct_priceFilterFormGroup() {
+        return this._fb.group({
+            lowestPriceCtrl: [false],
+            highestPriceCtrl: [false]
+        });
+    }
+
+    construct_ratingFilterFormGroup() {
+        return this._fb.group({
+            fourStarCtrl: [4],
+            threeStarCtrl: [3],
+            twoStarCtrl: [2],
+            oneStarCtrl: [1]
+        });
+    }
+
+    // ================================================================================
+    // Sorts & Filters - Price
+    // ================================================================================
+    onPriceChange() {
+        const lowestPriceVal = this.priceFilterFormGroup.get('lowestPriceCtrl').value;
+        const highestPriceVal = this.priceFilterFormGroup.get('highestPriceCtrl').value;
         const _event = 'price';
         if ( lowestPriceVal === true && highestPriceVal === false ) {
             this.emitFilterEventBuilder(_event, 'lowest');
@@ -48,12 +75,20 @@ export class RatesTableFilterComponent implements OnInit {
         }
     }
 
-    onLowestPriceClick(params) {
-        this.filterFormGroup.get('highestPriceCtrl').setValue(false);
+    onLowestPriceClick() {
+        this.priceFilterFormGroup.get('highestPriceCtrl').setValue(false);
     }
 
-    onHighestPriceClick(params) {
-        this.filterFormGroup.get('lowestPriceCtrl').setValue(false);
+    onHighestPriceClick() {
+        this.priceFilterFormGroup.get('lowestPriceCtrl').setValue(false);
+    }
+
+    // ================================================================================
+    // Sorts & Filters - Price
+    // ================================================================================
+    onClickRating(event) {
+        const getTargetRatingValue = event.target.attributes.value.value;
+        this.emitFilterEventBuilder('rating', getTargetRatingValue);
     }
 
 }

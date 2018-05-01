@@ -18,28 +18,28 @@ export class RatesTableComponent implements OnInit {
     public elementRef: ElementRef;
 
     // row data and columnd defs
-    private rowData; private columnDefs; private rowDataCountry; private columnDefsCountry; private columnDefsCarrier;
-    private columnDefsDetails;
+    rowData; columnDefs; rowDataCountry; columnDefsCountry; columnDefsCarrier; columnDefsDetails;
 
     // gridApi
     private gridApi: GridApi; private columnApi: ColumnApi; private gridApiCountry: GridApi; private gridApiCarrier: GridApi;
     private gridApiDetails: GridApi;
 
     // gridUi
-    private rowSelectionM = 'multiple';
+    rowSelectionM = 'multiple';
+    rowSelectionS = 'single';
     private howManyCarriers: number;
     private currentlySelectedCarriers = [];
     private movableRowToCol;
     private enterIndex;
 
     // top grid toolbar
-    private selectedCountryName: string;
+    selectedCountryName: string;
 
     // sidepanels
-    private booleanFilterSidebar = false;
-    private booleanCountryCarrierSidebar = true;
-    private booleanCarrierDetailsSidebar = false;
-    private countryCarrierPanelWidth;
+    booleanFilterSidebar = false;
+    booleanCountryCarrierSidebar = true;
+    booleanCarrierDetailsSidebar = false;
+    countryCarrierPanelWidth;
 
     constructor(
         private codesSharedService: CodesSharedService, private ratesService: RatesService,
@@ -56,7 +56,7 @@ export class RatesTableComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.rowDataCountry = this.codesSharedService.getCountryCodes().slice(1);
+        this.rowDataCountry = this.codesSharedService.getCountryCodes();
     }
 
     /*
@@ -74,12 +74,56 @@ export class RatesTableComponent implements OnInit {
                     const finalRowData = this.mainTableSharedService.createRowData(data);
                     this.gridApi.setRowData(finalRowData);
 
-                    this.gridApiCarrier.setRowData(carrierGroupHeadersArr);
-                    this.gridApiCarrier.selectAll();
-
-                    this.gridApiDetails.setRowData(carrierGroupHeadersArr);
+                    this.setCarrierRowData(carrierGroupHeadersArr);
+                    this.setCarrierDetailsRowData(carrierGroupHeadersArr);
                 }
             );
+    }
+
+    mockdata_get_specificCarrierRatesByCountry(isoCode: string) {
+        if ( isoCode === 'cn' ) {
+            this.ratesService.get_mockDataChina().subscribe( data => this.processMockData(data));
+        }
+        if ( isoCode === 'in' ) {
+            this.ratesService.get_mockDataIndia().subscribe( data => this.processMockData(data));
+        }
+        if ( isoCode === 'mx' ) {
+            this.ratesService.get_mockDataMexico().subscribe( data => this.processMockData(data));
+        }
+        if ( isoCode === 'ph' ) {
+            this.ratesService.get_mockDataPhillipines().subscribe( data => this.processMockData(data));
+        }
+        if ( isoCode === 'pk' ) {
+            this.ratesService.get_mockDataPakistan().subscribe( data => this.processMockData(data));
+        }
+        if ( isoCode === 'ru' ) {
+            this.ratesService.get_mockDataRussia().subscribe( data => this.processMockData(data));
+        }
+        if ( isoCode === 'sa' ) {
+            this.ratesService.get_mockDataSaudiArabia().subscribe( data => this.processMockData(data));
+        }
+        if ( isoCode === 'tj' ) {
+            this.ratesService.get_mockDataTajikistan().subscribe( data => this.processMockData(data));
+        }
+        if ( isoCode === 'us' ) {
+            this.ratesService.get_mockDataUnitedState().subscribe( data => this.processMockData(data));
+        }
+        if ( isoCode === 'ae' ) {
+            this.ratesService.get_mockDataUnitedArabEmirates().subscribe( data => this.processMockData(data));
+        }
+    }
+
+    processMockData(rowData) {
+        const carrierGroupHeadersArr = this.mainTableSharedService.createColumnGroupHeaders(rowData);
+        this.howManyCarriers = carrierGroupHeadersArr.length;
+
+        this.columnDefs = this.mainTableSharedService.createCarrierColumnDefs(carrierGroupHeadersArr, rowData);
+
+        const finalRowData = this.mainTableSharedService.createRowData(rowData);
+        this.gridApi.setRowData(finalRowData);
+
+        this.setCarrierRowData(carrierGroupHeadersArr);
+        this.setCarrierDetailsRowData(carrierGroupHeadersArr);
     }
 
     // ================================================================================
@@ -94,6 +138,7 @@ export class RatesTableComponent implements OnInit {
     on_GridReady_country(params): void {
         this.gridApiCountry = params.api;
         params.api.sizeColumnsToFit();
+        this.gridApiCountry.selectIndex(0, true, null);
     }
 
     on_GridReady_carrier(params): void {
@@ -160,6 +205,15 @@ export class RatesTableComponent implements OnInit {
         ];
     }
 
+    setCarrierRowData(rowData: Array<[{}]>) {
+        this.gridApiCarrier.setRowData(rowData);
+        this.gridApiCarrier.selectAll();
+    }
+
+    setCarrierDetailsRowData(rowData: Array<[{}]>) {
+        this.gridApiDetails.setRowData(rowData);
+    }
+
     // ================================================================================
     // Top toolbar
     // ================================================================================
@@ -201,6 +255,11 @@ export class RatesTableComponent implements OnInit {
             }
             if ( params.status === 'reset' ) {
                 this.sortByResetPrice();
+            }
+        }
+        if (params.event === 'rating') {
+            if ( params.status === '4' ) {
+                console.log(params.status);
             }
         }
     }
@@ -380,7 +439,7 @@ export class RatesTableComponent implements OnInit {
     }
 
     // ================================================================================
-    // AG Grid Main Table - Header - Sorts & Filters
+    // AG Grid Main Table - Sorts & Filters - Price
     // ================================================================================
     sortByLowestPrice() {
         const sort = [
@@ -423,6 +482,13 @@ export class RatesTableComponent implements OnInit {
     }
 
     // ================================================================================
+    // AG Grid Main Table - Sorts & Filters - Rating
+    // ================================================================================
+    sortByFourStarOrHigher() {
+
+    }
+
+    // ================================================================================
     // AG Grid Country Table
     // ================================================================================
     rowSelectedCountry(params) {
@@ -435,7 +501,7 @@ export class RatesTableComponent implements OnInit {
         const countryCode = this.gridApiCountry.getSelectedRows();
         if ( countryCode.length > 0 ) {
             const selectedCode = this.gridApiCountry.getSelectedRows()[0].code;
-            this.get_specificCarrierRatesByCountry(selectedCode); // API Call
+            this.mockdata_get_specificCarrierRatesByCountry(selectedCode); // API Call
             this.selectedCountryName = this.gridApiCountry.getSelectedRows()[0].country;
         }
     }
@@ -461,6 +527,10 @@ export class RatesTableComponent implements OnInit {
 
     getCarrierDatabaseRatings(rowNodeId): number {
         return this.gridApiCarrier.getRowNode(rowNodeId).data.rating;
+    }
+
+    getArrayOfCarrierIdAndRating(): Array<[{}]> {
+        // return this.columnApi.get
     }
 
 }
