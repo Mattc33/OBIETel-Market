@@ -56,6 +56,7 @@ export class MainTableSharedService {
                     const min = Math.min(...arr);
                     return min;
                 },
+                lockPosition: true,
                 cellStyle: { 'border-right': '1px solid #E0E0E0' },
                 hide: true,
             },
@@ -68,6 +69,7 @@ export class MainTableSharedService {
                     const min = Math.max(...arr);
                     return min;
                 },
+                lockPosition: true,
                 cellStyle: { 'border-right': '1px solid #E0E0E0' },
                 hide: true,
             }
@@ -93,7 +95,6 @@ export class MainTableSharedService {
             if ( carrierGroupHeadersArr[i].rating >= 5 ) {
                 // tslint:disable-next-line:max-line-length
                 ratingTemplate = `<i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>`;
-            } else {
             }
 
             const ratingAmount = (Math.floor(Math.random() * 999).toString());
@@ -109,6 +110,17 @@ export class MainTableSharedService {
                 `
                 +
                 `<div class="rating-container" id="ratings_${i}">${ratingTemplate}(${ratingAmount})</div>`
+                +
+                `
+                <div class="signalbars" id="signalbar_${i}">
+                    - QoS:
+                    <div class="first-bar bar"></div>
+                    <div class="second-bar bar"></div>
+                    <div class="third-bar bar"></div>
+                    <div class="fourth-bar bar"></div>
+                    <div class="fifth-bar bar"></div>
+                </div>
+                `
                 +
                 `
                 <div class="exceptions-container">

@@ -1,6 +1,8 @@
-import { Component, OnInit, ElementRef, Inject, Renderer } from '@angular/core';
+import { Component, OnInit, ElementRef, Inject, Renderer, ViewChild } from '@angular/core';
 import { GridApi, ColumnApi, ColumnGroup } from 'ag-grid';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+
+import { RatesTableFilterComponent } from './rates-table-filter/rates-table-filter.component';
 
 import { RatesService } from './../services/rates.api.service';
 import { CodesSharedService } from './../services/codes.shared.service';
@@ -16,9 +18,11 @@ import { RatingsComponent } from './dialog/ratings/ratings.component';
 export class RatesTableComponent implements OnInit {
 
     public elementRef: ElementRef;
+    @ViewChild(RatesTableFilterComponent) _filterComponent: RatesTableFilterComponent;
 
     // row data and columnd defs
     rowData; columnDefs; rowDataCountry; columnDefsCountry; columnDefsCarrier; columnDefsDetails;
+    rowDataCarrierDetails;
 
     // gridApi
     private gridApi: GridApi; private columnApi: ColumnApi; private gridApiCountry: GridApi; private gridApiCarrier: GridApi;
@@ -28,6 +32,7 @@ export class RatesTableComponent implements OnInit {
     rowSelectionM = 'multiple';
     rowSelectionS = 'single';
     private howManyCarriers: number;
+    private currentlyViewableCol; //  
     private currentlySelectedCarriers = [];
     private movableRowToCol;
     private enterIndex;
@@ -82,10 +87,10 @@ export class RatesTableComponent implements OnInit {
 
     mockdata_get_specificCarrierRatesByCountry(isoCode: string) {
         if ( isoCode === 'cn' ) {
-            this.ratesService.get_mockDataChina().subscribe( data => this.processMockData(data));
+            this.ratesService.get_mockDataChina().subscribe( data => this.processMockData(data) );
         }
         if ( isoCode === 'in' ) {
-            this.ratesService.get_mockDataIndia().subscribe( data => this.processMockData(data));
+            this.ratesService.get_mockDataIndia().subscribe( data => this.processMockData(data) );
         }
         if ( isoCode === 'mx' ) {
             this.ratesService.get_mockDataMexico().subscribe( data => this.processMockData(data));
@@ -111,6 +116,9 @@ export class RatesTableComponent implements OnInit {
         if ( isoCode === 'ae' ) {
             this.ratesService.get_mockDataUnitedArabEmirates().subscribe( data => this.processMockData(data));
         }
+        if ( isoCode === 'test' ) {
+            this.ratesService.get_testCountry().subscribe( data => this.processMockData(data));
+        }
     }
 
     processMockData(rowData) {
@@ -124,6 +132,8 @@ export class RatesTableComponent implements OnInit {
 
         this.setCarrierRowData(carrierGroupHeadersArr);
         this.setCarrierDetailsRowData(carrierGroupHeadersArr);
+
+        this._filterComponent.resetFilter();
     }
 
     // ================================================================================
@@ -212,6 +222,7 @@ export class RatesTableComponent implements OnInit {
 
     setCarrierDetailsRowData(rowData: Array<[{}]>) {
         this.gridApiDetails.setRowData(rowData);
+        this.rowDataCarrierDetails = rowData;
     }
 
     // ================================================================================
@@ -260,25 +271,31 @@ export class RatesTableComponent implements OnInit {
         if (params.event === 'rating') {
             this.sortByNumberOfStarOrHigher(params.status);
         }
+        if (params.event === 'qos') {
+            this.sortByNumberOfBarsOrHigher(params.status);
+        }
     }
 
     // ================================================================================
     // AG Grid Main Table - Header - Assigning Events
     // ================================================================================
-    onNewColumnsLoaded(params) {
-        this.assignEventHandler();
-        this.assignRatingsEventHandler();
-    }
-
-    onColumnVisible(params) {
+    onColumnVisible(params) { // On column reappears after hiding
         this.assignEventHandler();
         this.reassignRatingsEventHandler(params.column.colId);
         this.onCheckStatusAfterHideCol();
+        this.assignSignalBarCss();
+        // this.reassignSignalBarCss(params.column.colId);
+    }
+
+    onNewColumnsLoaded(params) {
+        this.assignEventHandler();
+        this.assignRatingsEventHandler();
+        this.assignSignalBarCss();
     }
 
     assignEventHandler() {
         for ( let i = 0; i < this.howManyCarriers; i++ ) {
-            const hideCol = this.elementRef.nativeElement.querySelector(`#hide_${i}`); // hide column btn
+            const hideCol = this.elementRef.nativeElement.querySelector(`#hide_${i}`);
             const e_hideCol = this.renderer.listen(hideCol, 'click', (event) => {
                  this.deselectCarrierTableCheckbox(event, `${i}`);
             });
@@ -301,12 +318,6 @@ export class RatesTableComponent implements OnInit {
 
     reassignRatingsEventHandler(colId) {
         const splitColId = parseInt(colId.split('_')[1], 0);
-        // if ( splitColId > 0 ) {
-        //     splitColId = splitColId;
-        // } else {
-        //     splitColId = 0;
-        // }
-
         const ratings = this.elementRef.nativeElement.querySelector(`#ratings_${splitColId}`);
         const e_ratings = this.renderer.listen(ratings, 'click', (event) => {
             this.onRatingsClicked(event, `${splitColId}`);
@@ -413,6 +424,82 @@ export class RatesTableComponent implements OnInit {
         this.currentlySelectedCarriers = filteredArr;
     }
 
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    // AG Grid Main Table - Header - Quality of Service
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    assignSignalBarCss() {
+        for ( let i = 0; i < this.rowDataCarrierDetails.length; i++) {
+            const signalbarOne = this.elementRef.nativeElement.querySelector(`#signalbar_${i} .first-bar`);
+            const signalbarTwo = this.elementRef.nativeElement.querySelector(`#signalbar_${i} .second-bar`);
+            const signalbarThree = this.elementRef.nativeElement.querySelector(`#signalbar_${i} .third-bar`);
+            const signalbarFour = this.elementRef.nativeElement.querySelector(`#signalbar_${i} .fourth-bar`);
+            const signalbarFive = this.elementRef.nativeElement.querySelector(`#signalbar_${i} .fifth-bar`);
+            const color = '#228B22';
+
+            if ( this.rowDataCarrierDetails[i].quality_of_service === 5 ) {
+                signalbarOne.style.setProperty('--bar-color', color);
+                signalbarTwo.style.setProperty('--bar-color', color);
+                signalbarThree.style.setProperty('--bar-color', color);
+                signalbarFour.style.setProperty('--bar-color', color);
+                signalbarFive.style.setProperty('--bar-color', color);
+            }
+            if ( this.rowDataCarrierDetails[i].quality_of_service === 4 ) {
+                signalbarOne.style.setProperty('--bar-color', color);
+                signalbarTwo.style.setProperty('--bar-color', color);
+                signalbarThree.style.setProperty('--bar-color', color);
+                signalbarFour.style.setProperty('--bar-color', color);
+            }
+            if ( this.rowDataCarrierDetails[i].quality_of_service === 3 ) {
+                signalbarOne.style.setProperty('--bar-color', color);
+                signalbarTwo.style.setProperty('--bar-color', color);
+                signalbarThree.style.setProperty('--bar-color', color);
+            }
+            if ( this.rowDataCarrierDetails[i].quality_of_service === 2 ) {
+                signalbarOne.style.setProperty('--bar-color', color);
+                signalbarTwo.style.setProperty('--bar-color', color);
+            }
+            if ( this.rowDataCarrierDetails[i].quality_of_service === 1 ) {
+                signalbarOne.style.setProperty('--bar-color', color);
+            }
+        }
+    }
+
+    reassignSignalBarCss(colId) {
+        const splitColId = parseInt(colId.split('_')[1], 0);
+        const signalbarOne = this.elementRef.nativeElement.querySelector(`#signalbar_${splitColId}} .first-bar`);
+        const signalbarTwo = this.elementRef.nativeElement.querySelector(`#signalbar_${splitColId}} .second-bar`);
+        const signalbarThree = this.elementRef.nativeElement.querySelector(`#signalbar_${splitColId}} .third-bar`);
+        const signalbarFour = this.elementRef.nativeElement.querySelector(`#signalbar_${splitColId}} .fourth-bar`);
+        const signalbarFive = this.elementRef.nativeElement.querySelector(`#signalbar_${splitColId}} .fifth-bar`);
+        const color = '#228B22';
+
+        if ( this.rowDataCarrierDetails[splitColId].quality_of_service === 5) {
+            signalbarOne.style.setProperty('--bar-color', color);
+            signalbarTwo.style.setProperty('--bar-color', color);
+            signalbarThree.style.setProperty('--bar-color', color);
+            signalbarFour.style.setProperty('--bar-color', color);
+            signalbarFive.style.setProperty('--bar-color', color);
+        }
+        if ( this.rowDataCarrierDetails[splitColId].quality_of_service === 4) {
+            signalbarOne.style.setProperty('--bar-color', color);
+            signalbarTwo.style.setProperty('--bar-color', color);
+            signalbarThree.style.setProperty('--bar-color', color);
+            signalbarFour.style.setProperty('--bar-color', color);
+        }
+        if ( this.rowDataCarrierDetails[splitColId].quality_of_service === 3) {
+            signalbarOne.style.setProperty('--bar-color', color);
+            signalbarTwo.style.setProperty('--bar-color', color);
+            signalbarThree.style.setProperty('--bar-color', color);
+        }
+        if ( this.rowDataCarrierDetails[splitColId].quality_of_service === 2) {
+            signalbarOne.style.setProperty('--bar-color', color);
+            signalbarTwo.style.setProperty('--bar-color', color);
+        }
+        if ( this.rowDataCarrierDetails[splitColId].quality_of_service === 1) {
+            signalbarOne.style.setProperty('--bar-color', color);
+        }
+    }
+
     // ================================================================================
     // AG Grid Main Table - Sorts & Filters - Price
     // ================================================================================
@@ -461,7 +548,7 @@ export class RatesTableComponent implements OnInit {
     // ================================================================================
     sortByNumberOfStarOrHigher(starNum: number) {
         this.loopThroughAndShowAll();
-        const carrierRatingArr = this.getArrayOfCarrierIdAndRating();
+        const carrierRatingArr = this.getArrayOfCarrierDetail();
         const filteredForNumberStarOrHigher = carrierRatingArr.filter(data => data.rating >= starNum);
         const filteredForLowerThanNumberStar = carrierRatingArr.filter(data => data.rating < starNum);
 
@@ -487,21 +574,24 @@ export class RatesTableComponent implements OnInit {
     }
 
     // ================================================================================
+    // AG Grid Main Table - Sorts & Filters - QoS
+    // ================================================================================
+    sortByNumberOfBarsOrHigher(barNum: number) {
+        this.loopThroughAndShowAll();
+        const carrierQoSArr = this.getArrayOfCarrierDetail();
+        const filiteredForNumberBarOrHigher = carrierQoSArr.filter(data => data.quality_of_service >= barNum);
+        const filiteredForLowerThanNumberBar = carrierQoSArr.filter(data => data.quality_of_service < barNum);
+
+        this.loopThroughAndHide(filiteredForLowerThanNumberBar);
+    }
+
+    // ================================================================================
     // AG Grid Country Table
     // ================================================================================
-    rowSelectedCountry(params) {
-        this.gridApi.setRowData([]);
-        this.gridApiCarrier.setRowData([]);
-        this.columnDefs = [];
-
-        // Emit event back to filter-child-component to reset form
-
-        const countryCode = this.gridApiCountry.getSelectedRows();
-        if ( countryCode.length > 0 ) {
-            const selectedCode = this.gridApiCountry.getSelectedRows()[0].code;
-            this.mockdata_get_specificCarrierRatesByCountry(selectedCode); // API Call
-            this.selectedCountryName = this.gridApiCountry.getSelectedRows()[0].country;
-        }
+    onSelectionChanged(params) {
+        const selectedCode = this.gridApiCountry.getSelectedRows()[0].code;
+        this.mockdata_get_specificCarrierRatesByCountry(selectedCode); // API Call
+        this.selectedCountryName = this.gridApiCountry.getSelectedRows()[0].country; // Set country name to selected country
     }
 
     // ================================================================================
@@ -527,13 +617,14 @@ export class RatesTableComponent implements OnInit {
         return this.gridApiCarrier.getRowNode(rowNodeId).data.rating;
     }
 
-    getArrayOfCarrierIdAndRating() {
+    getArrayOfCarrierDetail() {
         const carrierRatingArr = [];
         for ( let i = 0; i < this.howManyCarriers; i++) {
             const gridDetailRowData = this.gridApiDetails.getDisplayedRowAtIndex(i);
             carrierRatingArr.push({
                 colId: parseInt(gridDetailRowData.data.carrier_name.slice(7), 0) - 1,
-                rating: gridDetailRowData.data.rating
+                rating: gridDetailRowData.data.rating,
+                quality_of_service: gridDetailRowData.data.quality_of_service
             });
         }
         return carrierRatingArr;

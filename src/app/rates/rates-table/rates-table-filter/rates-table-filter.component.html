@@ -1,6 +1,6 @@
 <div class="filter-container">
 
-    <header>Filter By:</header>
+    <header>Filter By: <span (click)="resetFilter()"><i class="fas fa-undo"></i></span></header>
 
         <hr>
 
@@ -23,16 +23,16 @@
                 <div class="filter-option rating">
                     <h4>Rating</h4>
                     <div class="filter-option-inner">
-                        <div class="rate" (click)="onClickRating(4)">
+                        <div class="rate" (click)="onClickRating(4)" [class.active]="isRatingActiveFour">
                             <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i> & up
                         </div>
-                        <div class="rate" (click)="onClickRating(3)">
+                        <div class="rate" (click)="onClickRating(3)" [class.active]="isRatingActiveThree">
                             <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i> & up
                         </div>
-                        <div class="rate" (click)="onClickRating(2)">
+                        <div class="rate" (click)="onClickRating(2)" [class.active]="isRatingActiveTwo">
                             <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i> & up
                         </div>
-                        <div class="rate" (click)="onClickRating(1)">
+                        <div class="rate" (click)="onClickRating(1)" [class.active]="isRatingActiveOne">
                             <i class="fas fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i> & up
                         </div>
                     </div>
@@ -41,7 +41,52 @@
         </form>
 
         <hr>
-            <!--
+
+        <form class="filter-group">
+            <div class="filter-group">
+                <div class="filter-option rating">
+                    <h4>Quality of Service</h4>
+                    <div class="filter-option-inner">
+                        <div class="signal-bars" id="signalbarFilter_4" (click)="onClickQoS(4)" [class.active]="isQoSActiveFour">
+                            <div class="first-bar bar signalon"></div>
+                            <div class="second-bar bar signalon"></div>
+                            <div class="third-bar bar signalon"></div>
+                            <div class="fourth-bar bar signalon"></div>
+                            <div class="fifth-bar bar"></div>
+                            & up
+                        </div>
+                        <div class="signal-bars" id="signalbarFilter_3" (click)="onClickQoS(3)" [class.active]="isQoSActiveThree">
+                            <div class="first-bar bar signalon"></div>
+                            <div class="second-bar bar signalon"></div>
+                            <div class="third-bar bar signalon"></div>
+                            <div class="fourth-bar bar"></div>
+                            <div class="fifth-bar bar"></div>
+                            & up
+                        </div>
+                        <div class="signal-bars" id="signalbarFilter_2" (click)="onClickQoS(2)" [class.active]="isQoSActiveTwo">
+                            <div class="first-bar bar signalon"></div>
+                            <div class="second-bar bar signalon"></div>
+                            <div class="third-bar bar"></div>
+                            <div class="fourth-bar bar"></div>
+                            <div class="fifth-bar bar"></div>
+                            & up
+                        </div> 
+                        <div class="signal-bars" id="signalbarFilter_1" (click)="onClickQoS(1)" [class.active]="isQoSActiveOne">
+                            <div class="first-bar bar signalon"></div>
+                            <div class="second-bar bar"></div>
+                            <div class="third-bar bar"></div>
+                            <div class="fourth-bar bar"></div>
+                            <div class="fifth-bar bar"></div>
+                            & up
+                        </div> 
+                    </div>
+                </div>
+            </div>
+        </form>
+            
+        
+        
+        <!--
             <- - <div class="filter-group"> <!- - QOS - ->
                 <div class="filter-option-title">Quality of Service</div>
                 <mat-radio-group class="filter-radio-group" [(ngModel)]="currentQosToggle">
@@ -73,29 +118,6 @@
                     </mat-radio-button>
                 </mat-radio-group>    
             </div>            
-
-            <hr>
-
-            <div class="filter-group"> <!- - Ratings - ->
-                <div class="filter-option-title">Ratings</div>
-                <mat-radio-group class="filter-radio-group" [(ngModel)]="currentRatingToggle">
-                    <mat-radio-button class="ratings-radio-button" *ngFor="let rating of ratingsFilterGroup" [value]="rating">
-                        <i *ngIf="rating>=1" class="far fa-star"></i>
-                        <i *ngIf="rating>=2" class="far fa-star"></i>
-                        <i *ngIf="rating>=3" class="far fa-star"></i>
-                        <i *ngIf="rating>=4" class="far fa-star"></i>
-                        <i *ngIf="rating>=5" class="far fa-star"></i>
-                    </mat-radio-button>
-                </mat-radio-group>
-                <hr>
-                <mat-radio-group class="filter-radio-group inner" [(ngModel)]="currentRatingToggle">
-                    <mat-radio-button class="ratings-sort-radio-button" *ngFor="let rating of ratingsSortGroup" [value]="rating">
-                        {{rating}}
-                    </mat-radio-button>
-                </mat-radio-group>               
-            </div>
-
-            <hr>
 
             <div class="filter-group"> <!- - Coverage - ->
                 <div class="filter-option-title">Carrier Coverage</div>

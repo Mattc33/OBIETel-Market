@@ -11,7 +11,7 @@
         <div class="country-carrier-picker-container" [style.width]="countryCarrierPanelWidth">
             <ag-grid-angular class="ag-theme-balham" id="country-picker-table"
                 [columnDefs]="columnDefsCountry" [rowData]="rowDataCountry"
-                [rowSelection]="rowSelectionS" (rowSelected)="rowSelectedCountry($event)" [suppressRowClickSelection]="true"
+                [rowSelection]="rowSelectionS" (selectionChanged)="onSelectionChanged($event)" [suppressRowClickSelection]="true"
                 [floatingFilter]="true" [enableSorting]="true" (gridSizeChanged)="gridSizeChanged($event)"
         
                 (gridReady)="on_GridReady_country($event)"
@@ -21,7 +21,7 @@
                 [columnDefs]="columnDefsCarrier" [rowData]=""
                 [rowSelection]="rowSelectionM" (rowSelected)="rowSelectedCarrier($event)" [suppressRowClickSelection]="true"
                 [floatingFilter]="true" (gridSizeChanged)="gridSizeChanged($event)"
-                
+
                 (gridReady)="on_GridReady_carrier($event)"
             >
             </ag-grid-angular>
@@ -39,7 +39,6 @@
             [enableColResize]="true" (gridSizeChanged)="gridSizeChanged($event)"
             [suppressColumnVirtualisation]="true"
 
-
             (gridReady)="on_GridReady_details($event)"
         >
         </ag-grid-angular>
@@ -54,7 +53,7 @@
                 <button (click)="toggleCarrierDetailsSidebar()"><i class="fas fa-info-circle"></i> <span class="country-carrier-header">Carrier Details</span> </button>
             </div>
             <div class="selected-country-name-header"> {{selectedCountryName}} </div>
-            <div class="toggle-country-carrier-menu" >
+            <div class="toggle-country-carrier-menu">
                 <button (click)="toggleCountryCarrierSidebar()"> <i class="fas fa-globe"></i> <span class="country-carrier-header">Country | Carrier</span></button>
                 <!-- <button> <i class="fas fa-shopping-cart"></i> <span class="country-carrier-header">View Cart</span></button> -->
             </div>
@@ -66,8 +65,7 @@
                 [suppressRowClickSelection]="true"
                 [floatingFilter]="true" [enableSorting]="true"
                 [enableColResize]="true"
-                [suppressDragLeaveHidesColumns]="true"
-                [suppressColumnVirtualisation]="true"
+                [suppressDragLeaveHidesColumns]="true" [suppressColumnVirtualisation]="true"
                 (columnVisible)="onColumnVisible($event)"
                 (newColumnsLoaded)="onNewColumnsLoaded($event)"
 

@@ -1,3 +1,7 @@
+:root {
+	--bar-color: #ffffff;
+}
+
 .top-table-toolbar {
     height: 30px;
     border: 1px solid lightgray;
@@ -29,14 +33,14 @@
         .country-carrier-header {
             padding-right: 5px;
         }
-    }
 
-    button:focus {
-        outline:0;
-    }
+        &:focus {
+            outline: 0;
+        }
 
-    button:hover {
-        color: gray;
+        &:hover {
+            color: gray;
+        }
     }
 
     .toggle-filter-menu {
@@ -125,24 +129,55 @@
         float: right;
         margin-top: 5px;
         font-size: 15px;
-    }
 
-    .fa-minus:hover {
-        color: red;
+        &:hover {
+            color: red;
+        }
     }
 
     .rating-container {
         color: blue;
         height: 25px;
-    }
 
-    .rating-container:hover {
-        color: #9999ff;
-        border-bottom: 1px dotted #9999ff;
+        &:hover {
+            color: #7f7fff;
+            cursor: pointer;
+        }
     }
 
     .add-to-cart:hover {
         color: green;
+    }
+
+    .signalbars {
+        height: 14px; width: 100%;
+  
+        .bar {
+            width: 3%;
+            display: inline-block;
+            border: 1px solid black;
+        }
+        
+        .first-bar  { 
+            height: 20%; 
+            background-color: var(--bar-color);
+        }
+        .second-bar { 
+            height: 40%;
+            background-color: var(--bar-color); 
+        }
+        .third-bar  { 
+            height: 60%; 
+            background-color: var(--bar-color);
+        }
+        .fourth-bar { 
+            height: 80%; 
+            background-color: var(--bar-color);
+        }
+        .fifth-bar  { 
+            height: 99.9%; 
+            background-color: var(--bar-color);
+        }
     }
 }
 

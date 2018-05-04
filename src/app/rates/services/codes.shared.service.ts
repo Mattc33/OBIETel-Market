@@ -43,6 +43,10 @@ export class CodesSharedService {
             {
                 'country': 'United Arab Emirates',
                 'code': 'ae'
+            },
+            {
+                'country': 'Test Country',
+                'code': 'test'
             }
         ];
     }

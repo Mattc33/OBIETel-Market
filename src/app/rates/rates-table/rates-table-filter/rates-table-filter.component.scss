@@ -12,6 +12,16 @@
         padding-top: 10px;
         margin-bottom: 10px;
         padding-left: 5px;
+
+        .fa-undo {
+            float: right;
+            margin-right: 10px;
+
+            &:hover {
+                cursor: pointer;
+                color: darkgray;
+            }
+        }
     }
 
     .filter-option-title{
@@ -33,9 +43,14 @@
 
     hr {
         height: 1px;
-        color: #E0E0E0;
         background-color: #E0E0E0;
         border: none;
+
+        &:first-of-type {
+            height: 1px;
+            background-color: gray;
+            border: none;
+        }
     }
 
     .filter-group {
@@ -61,10 +76,6 @@
             }
         }
 
-        .price {
-            
-        }
-
         .filter-radio-group {
             display: inline-flex;
             flex-direction: column;
@@ -80,10 +91,72 @@
             padding-bottom: 3px;
             display: inline-block;
             &:hover {
-                color: blue;
                 cursor: pointer;
             }
+            &.active {
+                color: blue;
+            }
         }
+
+        .signal-bars {
+            height: 20px; width: 60%;
+            margin-bottom: 5px;
+            
+            .bar {
+                width: 5%;
+                display: inline-block;
+                border: 1px solid black;
+            }
+
+            .first-bar  { 
+                height: 20%; 
+            }
+            .second-bar { 
+                height: 40%; 
+            }
+            .third-bar  { 
+                height: 60%; 
+            }
+            .fourth-bar { 
+                height: 80%; 
+            }
+            .fifth-bar  {
+                height: 99.9%; 
+            }
+
+            &:hover {
+                cursor: pointer;
+            }
+            &.active {
+                color: green;
+            }
+            &.active .signalon {
+                background-color: green;
+            }
+        }
+
+        .signalon {
+            background-color: #000000;  
+        }
+
+
+        // #signalbarFilter_4 {
+        //     .first-bar { 
+        //         background-color: #000000;
+        //     }
+        //     .second-bar { 
+        //         background-color: #000000;
+        //     }
+        //     .third-bar { 
+        //         background-color: #000000;
+        //     }
+        //     .fourth-bar { 
+        //         background-color: #000000;
+        //     }
+        //     .fifth-bar {
+        //         background-color: #ffffff;
+        //     }
+        // }
 
     }
 }

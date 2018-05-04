@@ -104,6 +104,14 @@ export class RatesService {
             .do(data => console.log('server data:', data));
     }
 
+    get_testCountry() {
+        return this.http.get('https://raw.githubusercontent.com/Mattc33/MattsCDN/master/json/mockup-obietel/testCountry.json')
+            .map(res => res.json())
+            .catch(this.handleError)
+            .do(data => console.log('server data:', data));
+    }
+
+
     handleError(error: any): any {
         const errMsg = (error.message) ? error.message :
             error.status ? `${error.status} - ${error.statusText}` : 'Server error';
