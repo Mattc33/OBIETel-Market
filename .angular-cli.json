@@ -9,7 +9,17 @@
       "outDir": "dist",
       "assets": [
         "assets",
-        "favicon.ico"
+        "favicon.ico",
+        { "glob": "china.json", "input": "./", "output": "./assets/json/" },
+        { "glob": "india.json", "input": "./", "output": "./assets/json/" },
+        { "glob": "mexico.json", "input": "./", "output": "./assets/json/" },
+        { "glob": "pakistan.json", "input": "./", "output": "./assets/json/" },
+        { "glob": "phillipines.json", "input": "./", "output": "./assets/json/" },
+        { "glob": "russia.json", "input": "./", "output": "./assets/json/" },
+        { "glob": "saudiarabia.json", "input": "./", "output": "./assets/json/" },
+        { "glob": "tajikistan.json", "input": "./", "output": "./assets/json/" },
+        { "glob": "unitedatabemirates.json", "input": "./", "output": "./assets/json/" },
+        { "glob": "unitedstates.json", "input": "./", "output": "./assets/json/" }
       ],
       "index": "index.html",
       "main": "main.ts",

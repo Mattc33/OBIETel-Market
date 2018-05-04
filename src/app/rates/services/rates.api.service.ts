@@ -33,72 +33,150 @@ export class RatesService {
             .do(data => console.log('server data:', data));
     }
 
-    // Get mock data
+        // Get mock data remote github host
+        // get_mockDataChina() {
+        //     return this.http.get('https://raw.githubusercontent.com/Mattc33/MattsCDN/master/json/mockup-obietel/china.json')
+        //         .map(res => res.json())
+        //         .catch(this.handleError)
+        //         .do(data => console.log('server data:', data));
+        // }
+    
+        // get_mockDataIndia() {
+        //     return this.http.get('https://rawgit.com/Mattc33/MattsCDN/master/json/mockup-obietel/india.json')
+        //         .map(res => res.json())
+        //         .catch(this.handleError)
+        //         .do(data => console.log('server data:', data));
+        // }
+    
+        // get_mockDataMexico() {
+        //     return this.http.get('https://rawgit.com/Mattc33/MattsCDN/master/json/mockup-obietel/mexico.json')
+        //         .map(res => res.json())
+        //         .catch(this.handleError)
+        //         .do(data => console.log('server data:', data));
+        // }
+    
+        // get_mockDataPhillipines() {
+        //     return this.http.get('https://rawgit.com/Mattc33/MattsCDN/master/json/mockup-obietel/phillipines.json')
+        //         .map(res => res.json())
+        //         .catch(this.handleError)
+        //         .do(data => console.log('server data:', data));
+        // }
+    
+        // get_mockDataPakistan() {
+        //     return this.http.get('https://rawgit.com/Mattc33/MattsCDN/master/json/mockup-obietel/pakistan.json')
+        //         .map(res => res.json())
+        //         .catch(this.handleError)
+        //         .do(data => console.log('server data:', data));
+        // }
+    
+        // get_mockDataRussia() {
+        //     return this.http.get('https://rawgit.com/Mattc33/MattsCDN/master/json/mockup-obietel/russia.json')
+        //         .map(res => res.json())
+        //         .catch(this.handleError)
+        //         .do(data => console.log('server data:', data));
+        // }
+    
+        // get_mockDataSaudiArabia() {
+        //     return this.http.get('https://rawgit.com/Mattc33/MattsCDN/master/json/mockup-obietel/saudiarabia.json')
+        //         .map(res => res.json())
+        //         .catch(this.handleError)
+        //         .do(data => console.log('server data:', data));
+        // }
+    
+        // get_mockDataTajikistan() {
+        //     return this.http.get('https://rawgit.com/Mattc33/MattsCDN/master/json/mockup-obietel/tajikistan.json')
+        //         .map(res => res.json())
+        //         .catch(this.handleError)
+        //         .do(data => console.log('server data:', data));
+        // }
+    
+        // get_mockDataUnitedState() {
+        //     return this.http.get('https://rawgit.com/Mattc33/MattsCDN/master/json/mockup-obietel/unitedstates.json')
+        //         .map(res => res.json())
+        //         .catch(this.handleError)
+        //         .do(data => console.log('server data:', data));
+        // }
+    
+        // get_mockDataUnitedArabEmirates() {
+        //     return this.http.get('https://rawgit.com/Mattc33/MattsCDN/master/json/mockup-obietel/unitedarabemirates.json')
+        //         .map(res => res.json())
+        //         .catch(this.handleError)
+        //         .do(data => console.log('server data:', data));
+        // }
+    
+        // get_testCountry() {
+        //     return this.http.get('https://raw.githubusercontent.com/Mattc33/MattsCDN/master/json/mockup-obietel/testCountry.json')
+        //         .map(res => res.json())
+        //         .catch(this.handleError)
+        //         .do(data => console.log('server data:', data));
+        // }
+
+    // Get mock data local
     get_mockDataChina() {
-        return this.http.get('https://raw.githubusercontent.com/Mattc33/MattsCDN/master/json/mockup-obietel/china.json')
+        return this.http.get('http://localhost:4200/assets/json/china.json')
             .map(res => res.json())
             .catch(this.handleError)
             .do(data => console.log('server data:', data));
     }
 
     get_mockDataIndia() {
-        return this.http.get('https://rawgit.com/Mattc33/MattsCDN/master/json/mockup-obietel/india.json')
+        return this.http.get('http://localhost:4200/assets/json/india.json')
             .map(res => res.json())
             .catch(this.handleError)
             .do(data => console.log('server data:', data));
     }
 
     get_mockDataMexico() {
-        return this.http.get('https://rawgit.com/Mattc33/MattsCDN/master/json/mockup-obietel/mexico.json')
+        return this.http.get('http://localhost:4200/assets/json/mexico.json')
             .map(res => res.json())
             .catch(this.handleError)
             .do(data => console.log('server data:', data));
     }
 
     get_mockDataPhillipines() {
-        return this.http.get('https://rawgit.com/Mattc33/MattsCDN/master/json/mockup-obietel/phillipines.json')
+        return this.http.get('http://localhost:4200/assets/json/phillipines.json')
             .map(res => res.json())
             .catch(this.handleError)
             .do(data => console.log('server data:', data));
     }
 
     get_mockDataPakistan() {
-        return this.http.get('https://rawgit.com/Mattc33/MattsCDN/master/json/mockup-obietel/pakistan.json')
+        return this.http.get('http://localhost:4200/assets/json/pakistan.json')
             .map(res => res.json())
             .catch(this.handleError)
             .do(data => console.log('server data:', data));
     }
 
     get_mockDataRussia() {
-        return this.http.get('https://rawgit.com/Mattc33/MattsCDN/master/json/mockup-obietel/russia.json')
+        return this.http.get('http://localhost:4200/assets/json/russia.json')
             .map(res => res.json())
             .catch(this.handleError)
             .do(data => console.log('server data:', data));
     }
 
     get_mockDataSaudiArabia() {
-        return this.http.get('https://rawgit.com/Mattc33/MattsCDN/master/json/mockup-obietel/saudiarabia.json')
+        return this.http.get('http://localhost:4200/assets/json/saudiarabia.json')
             .map(res => res.json())
             .catch(this.handleError)
             .do(data => console.log('server data:', data));
     }
 
     get_mockDataTajikistan() {
-        return this.http.get('https://rawgit.com/Mattc33/MattsCDN/master/json/mockup-obietel/tajikistan.json')
+        return this.http.get('http://localhost:4200/assets/json/tajikistan.json')
             .map(res => res.json())
             .catch(this.handleError)
             .do(data => console.log('server data:', data));
     }
 
     get_mockDataUnitedState() {
-        return this.http.get('https://rawgit.com/Mattc33/MattsCDN/master/json/mockup-obietel/unitedstates.json')
+        return this.http.get('http://localhost:4200/assets/json/unitedstates.json')
             .map(res => res.json())
             .catch(this.handleError)
             .do(data => console.log('server data:', data));
     }
 
     get_mockDataUnitedArabEmirates() {
-        return this.http.get('https://rawgit.com/Mattc33/MattsCDN/master/json/mockup-obietel/unitedarabemirates.json')
+        return this.http.get('http://localhost:4200/assets/json/unitedarabemirates.json')
             .map(res => res.json())
             .catch(this.handleError)
             .do(data => console.log('server data:', data));
